@@ -5,7 +5,7 @@
 
 # Data
 *.zip
-*_medium.txt
+*.txt
 
 # Python
 __pycache__/

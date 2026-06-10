@@ -70,14 +70,14 @@ for step in range(1000):
     pos += vel*dt
     vel *= damping
 
-    pos = np.clip(pos, -10, 10) #soft boundary
+    pos = np.clip(pos, -5, 5) #soft boundary
 
-    if step % 50 == 0:
+    if step % 100 == 0:
         plt.clf()
 
         if step % 200 == 0:
             kmeans = KMeans(n_clusters=8, random_state=0, n_init=10)
-            clusters = kmeans.fit_predict(vecs)
+            clusters = kmeans.fit_predict(pos) # colors on map indicate words in the same cluster!
 
         plt.scatter(pos[:, 0], pos[:, 1], c=clusters, s=8, cmap='tab10', alpha=0.7)
         plt.title(f"Step {step}")
