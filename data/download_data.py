@@ -6,7 +6,7 @@ from functools import lru_cache
 @lru_cache(maxsize=1)
 def download_zip(): #Download zip file only once and return zipfile object
     url = "https://nlp.stanford.edu/data/wordvecs/glove.2024.wikigiga.50d.zip"
-    zip_path = "glove.2024.wikigiga.50d.zip"
+    zip_path = "data/glove.2024.wikigiga.50d.zip"
     
     if not os.path.exists(zip_path):
         print("Downloading GloVe from Stanford...")
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     
     # Extract multiple portions from the same zip
     extract_portion(10_000, "glove.2024.wikigiga.50d_small", zip_path)
-    extract_portion(100_000, "glove.2024.wikigiga.50d_medium", zip_path)
+    #extract_portion(100_000, "glove.2024.wikigiga.50d_medium", zip_path)
     
     # delete file afterwards
     # os.remove(zip_path)
