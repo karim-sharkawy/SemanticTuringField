@@ -63,17 +63,6 @@ def compute_forces(pos, S, alpha, beta):
         F[i] = np.sum(strength[:, None] * diff, axis=0)
     return F
 
-def gravity_wave(sentence, words, vecs, pos, vel, strength=0.5, radius=3.0):
-    sentence_vec = np.mean([vecs[words.index(w)] for w in sentence.lower().split() if w in words], axis=0)
-
-    sims = cosine_similarity([sentence_vec], vecs)[0]
-
-    for i in range(N):
-        if sims[i] > 0.3:
-            direction = -pos[i]
-            force_mag = strength*sims[i]
-            vel[i] += direction * force_mag * dt
-
 # main()
 for step in range(1000):
     F = compute_forces(pos, S, alpha, beta)
