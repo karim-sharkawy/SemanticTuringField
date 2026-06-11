@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 
-
 def plot_positions(pos, clusters, step):
 
     plt.clf()

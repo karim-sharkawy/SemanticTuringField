@@ -1,6 +1,5 @@
 from sklearn.cluster import KMeans
 
-
 def cluster_positions(pos, n_clusters=8):
     kmeans = KMeans(
         n_clusters=n_clusters,

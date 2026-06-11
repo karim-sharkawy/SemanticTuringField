@@ -1,6 +1,6 @@
 import numpy as np
 
-from config import *
+from src.config import *
 
 from src.load_embeddings import load_embeddings
 
