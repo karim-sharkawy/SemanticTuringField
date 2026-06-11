@@ -1,84 +1,61 @@
 import numpy as np
 
-from sklearn.decomposition import PCA
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.cluster import KMeans
+from config import *
 
-import matplotlib.pyplot as plt
+from src.load_embeddings import load_embeddings
 
-import threading
-import time
+from src.semantics import lower_dimensions, build_similarity_matrix
 
-def load_embeddings(path, max_words=500):
-    embeddings = {} # {"word": np.array([...]), ...}
+from src.simulate_engine import STFSimulation
 
-    with open(path, 'r', encoding='utf-8') as f:
-        for index, line in enumerate(f):
-            if index >= max_words:
-                break
-            split_line = line.strip().split()
-            word = split_line[0]
-            word_embedding=np.array(split_line[1:], dtype=np.float64)
-            embeddings[word] = word_embedding
+from src.clustering import cluster_positions
+from src.plotting import plot_positions
 
-        return embeddings
 
-glove_embeddings = load_embeddings("data/glove.2024.wikigiga.50d_small.txt", max_words=500)
-words, vecs = list(glove_embeddings.keys()), np.array(list(glove_embeddings.values()))
-word_to_idx = {word: idx for idx, word in enumerate(words)} # for O(1) lookup
+def main():
 
-# use PCA to lower dimensions down to 50, for speed
-def lower_dimensions(vecs):
-    if vecs.shape[1] > 50:
-        print(f"Reducing dimensions from {vecs.shape[1]} to 50...")
-        pca = PCA(n_components=50)
-        vecs = pca.fit_transform(vecs)
-    return vecs
-vecs = lower_dimensions(vecs)
+    embeddings = load_embeddings(
+        "data/glove.2024.wikigiga.50d_small.txt",
+        max_words=MAX_WORDS
+    )
 
-# find similarity between words
-print("Computing similarity matrix...")
-S = cosine_similarity(vecs) # N x N similarity matrix: words x context
-S = (S - S.mean()) / S.std() # normalize to z-scores
+    words = list(embeddings.keys())
 
-#particle setup
-N = len(words) # of course limited by max_words, but good to have
-pos = np.random.rand(N,2) * 2.0 # position (x,y)
-vel = np.zeros_like(pos) # zero velocity for now
-mass = np.ones(N) #figure that out later
+    vecs = np.array(
+        list(embeddings.values())
+    )
 
-# force simulation parameters
-alpha=0.95
-beta=0.2
-dt=0.05
-damping=0.99
+    vecs = lower_dimensions(vecs)
 
-## Force Computation
-def compute_forces(pos, S, alpha, beta):
-    F = np.zeros_like(pos)
+    S = build_similarity_matrix(vecs)
 
-    for i in range(len(pos)): # len(pos) == len(words)
-        diff = pos[i] - pos # Shape: (N, 2) - diff to all other words
-        strength = -alpha * (S[i] - beta) #attract/repel
-        F[i] = np.sum(strength[:, None] * diff, axis=0)
-    return F
+    simulation = STFSimulation(
+        S,
+        alpha=ALPHA,
+        beta=BETA,
+        dt=DT,
+        damping=DAMPING
+    )
 
-# main()
-for step in range(1000):
-    F = compute_forces(pos, S, alpha, beta)
-    vel += F *dt
-    pos += vel*dt
-    vel *= damping
+    clusters = None
 
-    pos = np.clip(pos, -5, 5) #soft boundary
+    for step in range(NUM_STEPS):
 
-    if step % 100 == 0:
-        plt.clf()
+        pos = simulation.step()
 
         if step % 200 == 0:
-            kmeans = KMeans(n_clusters=8, random_state=0, n_init=10)
-            clusters = kmeans.fit_predict(pos) # colors on map indicate words in the same cluster!
+            clusters = cluster_positions(
+                pos,
+                NUM_CLUSTERS
+            )
 
-        plt.scatter(pos[:, 0], pos[:, 1], c=clusters, s=8, cmap='tab10', alpha=0.7)
-        plt.title(f"Step {step}")
-        plt.pause(0.01)
+        if step % 100 == 0:
+            plot_positions(
+                pos,
+                clusters,
+                step
+            )
+
+
+if __name__ == "__main__":
+    main()
