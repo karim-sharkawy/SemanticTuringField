@@ -1,16 +1,10 @@
 import numpy as np
-from src.forces import compute_forces
+
+from forces import compute_forces
+
 
 class STFSimulation:
-
-    def __init__(
-        self,
-        similarity_matrix,
-        alpha=0.95,
-        beta=0.2,
-        dt=0.05,
-        damping=0.99
-    ):
+    def __init__(self, similarity_matrix, alpha=0.95, beta=0.2, dt=0.05, damping=0.99):
         self.S = similarity_matrix
 
         self.alpha = alpha
@@ -25,22 +19,13 @@ class STFSimulation:
 
     def step(self):
 
-        F = compute_forces(
-            self.pos,
-            self.S,
-            self.alpha,
-            self.beta
-        )
+        F = compute_forces(self.pos, self.S, self.alpha, self.beta)
 
         self.vel += F * self.dt
         self.pos += self.vel * self.dt
 
         self.vel *= self.damping
 
-        self.pos = np.clip(
-            self.pos,
-            -5,
-            5
-        )
+        self.pos = np.clip(self.pos, -5, 5)
 
         return self.pos
