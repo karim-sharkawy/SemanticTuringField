@@ -1,220 +1,66 @@
 # Semantic Turing Field (STF)
-The Semantic Turing Field, A universe of words that evolves toward meaning.
-> *“A universe of words that evolves toward meaning.”*
 
-## 🧠 What is this?
+The Semantic Turing Field (STF) is an experimental visualization that treats words as interacting particles in a dynamic physical system. STF investigates whether semantic spaces can be modeled as evolving dynamical systems rather than static geometric embeddings. While primarily a visualization project, it provides an intuitive framework for exploring semantic organization, contextual perturbations, and emergent structure through concepts borrowed from statistical physics and dynamical systems.
 
-This is a side project I built because I wanted to explore a weird idea:
+Sentences perturb the field like external forces, causing clusters of related words to reorganize in real time.
 
-**What if language behaved like physics?**
+<div align="center">
+    (GIF of simulation)
+</div>
 
-The **Semantic Turing Field (STF)** treats words as particles in a 2D space. These particles move, interact, and self-organize based on their **semantic relationships**, forming clusters that represent meaning.
+## Overview
 
-Then, when you input a sentence, it acts like a **gravitational disturbance** — warping the entire field and reshaping how words relate to each other in real time.
+Traditional embedding visualizations are static.
 
-It’s not meant to be practical. It’s meant to be interesting.
+STF explores a different question:
 
+> **What if semantic space behaved like a physical system?**
 
-## ⚙️ Core Idea
+Each word becomes a particle whose motion is governed by interactions derived from semantic similarity. As the simulation evolves, coherent semantic structures naturally emerge.
 
-* Each word = a **particle**
-* Each particle has:
+This project is intended as an exploration of physics-inspired NLP rather than a production language model.
 
-  * Position ( x_i \in \mathbb{R}^2 )
-  * Velocity ( v_i )
-  * Mass ( m_i ) (often tied to word frequency)
-* Semantic relationships = **forces**
-* Sentences = **external fields / gravity waves**
+## Features
 
-Over time, the system evolves into clusters that reflect meaning — but dynamically, not statically.
+- Physics-inspired semantic simulation
+- Interactive sentence perturbations
+- Dynamic clustering of word meanings
+- Real-time visualization
+- Modular simulation framework
 
+## Example
 
-## 🔤 Embeddings (Why GloVe?)
+Input:
 
-This project uses **GloVe embeddings** instead of Word2Vec.
+"The ocean is calm today."
 
-👉 [https://nlp.stanford.edu/projects/glove/](https://nlp.stanford.edu/projects/glove/)
+The sentence produces a semantic disturbance that pulls ocean-related vocabulary together while slightly reshaping the surrounding semantic landscape.
 
-**Why GloVe?**
+(Insert GIF)
 
-* It captures **global co-occurrence statistics**, not just local context
-* Produces more **stable semantic geometry**
-* Works well when you want **meaning to behave like a field**, not just neighborhoods
+## Theory
 
-Since this project depends heavily on **pairwise similarity across many words**, GloVe’s global structure is a better fit.
+The simulation is based on a simple interaction model where semantic similarity determines attractive and repulsive forces between words.
 
+Rather than including the complete mathematical derivation here, the theoretical framework is documented separately.
 
-## 🧮 The Force Equation (Why this formula?)
+📄 **See:** `docs/semantic_theory.pdf`
 
-The core interaction between two words ( i ) and ( j ) is:
+The document covers
 
-[
-F_{ij} = -\alpha \cdot (\text{cosine_similarity}(i, j) - \beta)(x_i - x_j)
-]
+- semantic particles
+- force equations
+- energy interpretation
+- gravity-wave sentence perturbations
+- simulation dynamics
+- future extensions
 
-### 🔍 Breaking it down
+## Installation
 
-* **( \text{cosine_similarity}(i, j) )**
-  Measures semantic similarity between words
+```bash
+git clone https://github.com/karim-sharkawy/SemanticTuringField.git
+cd SemanticTuringField
 
-* **( (x_i - x_j) )**
-  Direction vector between particles
+pip install -r requirements.txt
 
-* **( \alpha )**
-  Controls overall force strength
-
-* **( \beta )**
-  A *threshold* that determines attraction vs repulsion
-
-
-
-## 🤔 Where does this come from?
-
-This formula is inspired by a mix of:
-
-### 1. **Classical Physics (Hooke / Spring Systems)**
-
-The structure:
-[
-F \propto (x_i - x_j)
-]
-
-is similar to spring forces, where objects pull or push based on distance.
-
-But instead of distance determining force strength…
-
-👉 **semantic similarity does**
-
-
-
-### 2. **Energy-Based Models**
-
-You can think of the system as minimizing an implicit energy:
-
-* Similar words → lower energy when close
-* Dissimilar words → lower energy when far
-
-The force is effectively:
-
-[
-F = -\nabla E
-]
-
-So we’re simulating a system that naturally settles into **semantic equilibrium**.
-
-
-
-### 3. **Signed Interaction Field**
-
-The key term:
-
-[
-(\text{similarity} - \beta)
-]
-
-creates two regimes:
-
-| Case           | Behavior   |
-| -- | - |
-| similarity > β | Attraction |
-| similarity < β | Repulsion  |
-
-This is important because:
-
-* Without repulsion → everything collapses
-* Without attraction → everything drifts apart
-
-So this term creates a **balanced, self-organizing system**
-
-
-
-## 🌊 Sentence as a “Gravity Wave”
-
-A sentence is embedded (e.g. average of word vectors), producing a vector:
-
-[
-s = \frac{1}{n} \sum_{k=1}^{n} w_k
-]
-
-This acts like a **potential field**:
-
-* Words similar to the sentence → pulled inward
-* Others → weakly affected
-
-This lets you literally *see meaning reshape the space*.
-
-
-
-## 🔄 Simulation Dynamics
-
-* Integration: Verlet / simple Euler (depending on implementation)
-* Damping: prevents chaotic divergence
-* Noise: keeps the system “alive”
-* Optional clustering: k-means / UMAP for visualization
-
-
-
-## 🎨 Visualization
-
-Each word is rendered as:
-
-* A point (or label)
-* Positioned in 2D
-* Colored by cluster or semantic group
-
-As the simulation runs:
-
-* Clusters form
-* Shift
-* Break
-* Re-form
-
-
-
-## 🧪 Why does this exist?
-
-* Because semantic spaces are usually static — this makes them **alive**
-* Because embeddings are geometric, but we rarely treat them as **physical systems**
-* Because it's fun to watch meaning behave like a fluid
-
-Also:
-
-> Because no one asked for it.
-
-
-
-## 🚀 Future Ideas
-
-* Word birth/death (dynamic vocabulary)
-* Memory effects (semantic “scars”)
-* Temporal drift (language evolution)
-* Real-time interaction (user input reshaping the field)
-* GPU acceleration for large vocabularies
-
-
-
-## 📦 Tech Stack
-
-* Python
-* NumPy
-* scikit-learn (PCA, cosine similarity)
-* Matplotlib / PyGame / VisPy (visualization)
-
-
-
-## 📚 Resources
-
-* GloVe (Stanford): [https://nlp.stanford.edu/projects/glove/](https://nlp.stanford.edu/projects/glove/)
-* Word embeddings overview: [https://web.stanford.edu/~jurafsky/slp3/](https://web.stanford.edu/~jurafsky/slp3/)
-* Energy-based models: Yann LeCun et al.
-
-
-
-## ⚠️ Disclaimer
-
-This is not:
-
-* A production NLP system
-* A scientifically rigorous model of cognition
-
-It’s an experiment in thinking about meaning as a dynamical system.
+python main.py

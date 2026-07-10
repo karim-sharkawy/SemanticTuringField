@@ -1,0 +1,116 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+
+\title{Semantic Theory}
+\author{Karim El-Sharkawy}
+\date{July 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\section{The Force Model}
+
+The core interaction between two words (or nodes) $i$ and $j$ is
+
+\[
+\mathbf{F}_{ij}
+=
+-\alpha
+\left(
+\operatorname{cosine\_similarity}(i,j)-\beta
+\right)
+(\mathbf{x}_i-\mathbf{x}_j)
+\]
+
+Where,
+
+\begin{itemize}
+    \item $\operatorname{cosine\_similarity}(i,j)$ measures semantic similarity between two words.
+
+    \item $(\mathbf{x}_i-\mathbf{x}_j)$ is the direction vector between the two particles.
+
+    \item $\alpha$ controls the overall force strength.
+
+    \item $\beta$ is a threshold that determines whether two words attract or repel each other.
+\end{itemize}
+
+\subsection{Where does this come from?}
+
+This equation is inspired by several ideas from physics and machine learning.
+
+\subsubsection{Classical Physics (Hooke / Spring Systems)}
+
+The basic structure
+
+\[
+\mathbf{F}
+\propto
+(\mathbf{x}_i-\mathbf{x}_j)
+\]
+
+resembles a spring force, where objects pull or push along the line (or edge) connecting them.
+
+However, instead of distance determining the force magnitude, semantic similarity determines the interaction strength.
+
+In other words,
+
+\[
+\text{distance}
+\;\longrightarrow\;
+\text{semantic similarity}
+\]
+
+\subsubsection{Energy-Based Models}
+
+The system can also be viewed as minimizing an implicit energy function.
+
+\begin{itemize}
+    \item Similar words have lower energy when they are close together.
+    \item Dissimilar words have lower energy when they are farther apart.
+\end{itemize}
+
+The force is therefore the negative gradient of the energy,
+
+\[
+\mathbf{F}
+=
+-\nabla E.
+\]
+
+Consequently, the simulation naturally evolves toward a semantic equilibrium.
+
+\subsubsection{Signed Interaction Field}
+
+The interaction term
+
+\[
+\left(
+\operatorname{similarity}-\beta
+\right)
+\]
+
+creates two distinct regimes:
+
+\[
+\begin{array}{c|c}
+\textbf{Condition} & \textbf{Behavior} \\
+\hline
+\operatorname{similarity}>\beta & \text{Attraction} \\
+\operatorname{similarity}<\beta & \text{Repulsion}
+\end{array}
+\]
+
+This balance is essential:
+
+\begin{itemize}
+    \item Without repulsion, every particle collapses into a single point.
+    \item Without attraction, particles simply drift apart.
+\end{itemize}
+
+The threshold parameter $\beta$ therefore creates a balanced, self-organizing semantic field.
+
+\end{document}
