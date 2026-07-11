@@ -1,26 +1,17 @@
-from typing import List, Dict
-import numpy as np
 import string
+from typing import Dict, List
 
-def tokenize(sentence):
-    clean_text = sentence.lower()
-    clean_text = clean_text.translate(str.maketrans('', '', string.punctuation))
-    clean_text = clean_text.split()
-    return clean_text
+import numpy as np
 
-# use case: tokens = tokenize(sentence)
 
-### given that a sentence is input, i'll worry about that later
+def tokenize(sentence: str) -> List[str]:
+    return sentence.lower().translate(str.maketrans("", "", string.punctuation)).split()
+
+
 def sentence_to_embedding(tokens: List[str], embeddings: Dict[str, np.ndarray]):
-    valid_tokens = []
-    for token in tokens:
-        if token in embeddings.keys():
-            valid_tokens.append(token)
+    valid_tokens = [embeddings[token] for token in tokens if token in embeddings]
 
-    if len(valid_tokens) == 0:
+    if not valid_tokens:
         return None
-    
-    avg_embeddings = [embeddings[token] for token in valid_tokens]
-    sentence_embedding = np.mean(avg_embeddings, axis=0)
 
-    return sentence_embedding
+    return np.mean(valid_tokens, axis=0)

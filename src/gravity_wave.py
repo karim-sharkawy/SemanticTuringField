@@ -1,29 +1,24 @@
-import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-from config import DT as dt
-from text_preprocessing import sentence_to_embedding
-
-sentence_embedding = sentence_to_embedding(sentence, embeddings)
-if embedding is None:
-    # ignore the sentence
-    print("No valid tokens present, skipping this sentence.")
-    pass
+from config import DT
+from text_preprocessing import sentence_to_embedding, tokenize
 
 
-def gravity_wave(sentence, words, vecs, pos, vel, strength=0.5, radius=3.0):
-    sentence_vec = np.mean(
-        [vecs[words.index(w)] for w in sentence.lower().split() if w in words], axis=0
-    )
+def gravity_wave(sentence, embeddings, vecs, pos, vel, strength=0.5):
 
-    sims = cosine_similarity([sentence_vec], vecs)[0]
+    tokens = tokenize(sentence)
 
-    N = len(pos)
+    sentence_vec = sentence_to_embedding(tokens, embeddings)
 
-    for i in range(N):
+    if sentence_vec is None:
+        print("No valid tokens present.")
+        return vel
+
+    sims = cosine_similarity(sentence_vec.reshape(1, -1), vecs)[0]
+
+    for i in range(len(pos)):
         if sims[i] > 0.3:
             direction = -pos[i]
-            force_mag = strength * sims[i]
-            vel[i] += direction * force_mag * dt
+            vel[i] += direction * strength * sims[i] * DT
 
     return vel
