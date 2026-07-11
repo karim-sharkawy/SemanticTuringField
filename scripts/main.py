@@ -1,11 +1,11 @@
 import numpy as np
 
-from clustering import cluster_embeddings
-from config import *
-from plotting import plot_positions
 from scripts.load_embeddings import load_embeddings
-from semantics import build_similarity_matrix, lower_dimensions
-from simulate_engine import STFSimulation
+from src.clustering import cluster_embeddings
+from src.config import *
+from src.plotting import plot_positions
+from src.semantics import build_similarity_matrix, lower_dimensions
+from src.simulate_engine import STFSimulation
 
 
 def main():

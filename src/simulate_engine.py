@@ -1,6 +1,6 @@
 import numpy as np
 
-from forces import compute_forces
+from src.forces import compute_forces
 
 
 class STFSimulation:

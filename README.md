@@ -63,4 +63,4 @@ cd SemanticTuringField
 
 pip install -r requirements.txt
 
-python -m srcipts/main.py
+python -m srcipts.main
