@@ -1,6 +1,6 @@
 import numpy as np
 
-from clustering import cluster_positions
+from clustering import cluster_embeddings
 from config import *
 from load_embeddings import load_embeddings
 from plotting import plot_positions
@@ -22,16 +22,15 @@ def main():
 
     simulation = STFSimulation(S, alpha=ALPHA, beta=BETA, dt=DT, damping=DAMPING)
 
-    clusters = None
-
+    clusters, labels = None, None
     for step in range(NUM_STEPS):
         pos = simulation.step()
 
         if step % 200 == 0:
-            clusters = cluster_positions(pos, NUM_CLUSTERS)
+            clusters, labels = cluster_embeddings(vecs, words, NUM_CLUSTERS)
 
         if step % 100 == 0:
-            plot_positions(pos, clusters, step)
+            plot_positions(pos, clusters, labels, step)
 
 
 if __name__ == "__main__":

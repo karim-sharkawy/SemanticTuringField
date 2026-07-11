@@ -4,4 +4,4 @@ scikit-learn==1.8.0
 matplotlib==3.10.9
 ruff==0.15.12
 ipykernel==7.3.0
-#streamlit==1.57.0
+streamlit==1.57.0
