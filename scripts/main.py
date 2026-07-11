@@ -2,15 +2,21 @@ import numpy as np
 
 from clustering import cluster_embeddings
 from config import *
-from load_embeddings import load_embeddings
 from plotting import plot_positions
+from scripts.load_embeddings import load_embeddings
 from semantics import build_similarity_matrix, lower_dimensions
 from simulate_engine import STFSimulation
 
 
 def main():
 
-    embeddings = load_embeddings("data/glove.2024.wikigiga.50d_small.txt", max_words=MAX_WORDS)
+    try:
+        embeddings = np.load(
+            EMBEDDINGS_PATH, allow_pickle=True
+        ).item()  # item() loads it as original, a dictionairy in this case
+    except FileNotFoundError:
+        embeddings = load_embeddings(DATA_PATH, MAX_WORDS)
+        np.save(EMBEDDINGS_PATH, embeddings, allow_pickle=True)
 
     words = list(embeddings.keys())
 

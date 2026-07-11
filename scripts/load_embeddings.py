@@ -1,7 +1,9 @@
 import numpy as np
 
+from src.config import *
 
-def load_embeddings(path, max_words=500):
+
+def load_embeddings(path, max_words=MAX_WORDS):
     embeddings = {}  # {"word": np.array([...]), ...}
 
     with open(path, "r", encoding="utf-8") as f:
@@ -14,3 +16,9 @@ def load_embeddings(path, max_words=500):
             embeddings[word] = word_embedding
 
         return embeddings
+
+
+if __name__ == "__main__":
+    embeddings = load_embeddings(DATA_PATH, max_words=MAX_WORDS)
+
+    np.save(EMBEDDINGS_PATH, embeddings, allow_pickle=True)
