@@ -2,6 +2,13 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 from config import DT as dt
+from text_preprocessing import sentence_to_embedding
+
+sentence_embedding = sentence_to_embedding(sentence, embeddings)
+if embedding is None:
+    # ignore the sentence
+    print("No valid tokens present, skipping this sentence.")
+    pass
 
 
 def gravity_wave(sentence, words, vecs, pos, vel, strength=0.5, radius=3.0):
