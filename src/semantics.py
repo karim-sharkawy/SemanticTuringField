@@ -19,3 +19,9 @@ def build_similarity_matrix(vecs):
     S = (S - S.mean()) / S.std()  # normalize to z-scores
 
     return S
+
+def compute_sentence_similarities(sentence_embedding, vecs):
+    return cosine_similarity(
+        sentence_embedding.reshape(1, -1),
+        vecs
+    )[0]
