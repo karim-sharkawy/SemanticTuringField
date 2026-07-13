@@ -1,6 +1,7 @@
 import numpy as np
+from numba import njit
 
-
+@njit(cache=True)
 def compute_forces(pos, similarity_matrix, alpha, beta):
     F = np.zeros_like(pos)
 
