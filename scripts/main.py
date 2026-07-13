@@ -7,6 +7,8 @@ from src.plotting import plot_positions
 from src.semantics import build_similarity_matrix, lower_dimensions
 from src.simulate_engine import STFSimulation
 
+current_sentence = None
+gravity_steps_remaining = 0
 
 def main():
 
@@ -30,16 +32,22 @@ def main():
 
     clusters, labels = None, None
     for step in range(NUM_STEPS):
-        pos = simulation.step()
-        """ will be used once i start working on and testing inputs
-        user_sentence = input("Sentence: ")
+        if gravity_steps_remaining == 0:
+            user_sentence = input("Sentence (Enter to skip): ").strip()
 
-        pos = simulation.step(
-            sentence=user_sentence,
-            embeddings=embeddings,
-            vecs=vecs,
-        )
-        """
+            if user_sentence:
+                current_sentence = user_sentence
+                gravity_steps_remaining = 75
+
+        if gravity_steps_remaining > 0:
+            pos = simulation.step(
+                sentence=current_sentence,
+                embeddings=embeddings,
+                vecs=vecs,
+            )
+            gravity_steps_remaining -= 1
+        else:
+            pos = simulation.step()
 
         if step % 200 == 0:
             clusters, labels = cluster_embeddings(vecs, words, NUM_CLUSTERS)
