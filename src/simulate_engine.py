@@ -2,6 +2,7 @@ import numpy as np
 
 from forces import compute_forces
 from gravity_wave import gravity_wave
+from boundaries import boundary_force
 
 
 class STFSimulation:
@@ -22,6 +23,7 @@ class STFSimulation:
 
         # original semantic force
         F = compute_forces(self.pos, self.S, self.alpha, self.beta)
+        F += boundary_force(self.pos)
 
         # gravity wave
         if sentence is not None and embeddings is not None and vecs is not None:
@@ -32,7 +34,5 @@ class STFSimulation:
         self.pos += self.vel * self.dt
 
         self.vel *= self.damping
-
-        self.pos = np.clip(self.pos, -5, 5)
 
         return self.pos
