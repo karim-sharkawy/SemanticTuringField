@@ -1,11 +1,10 @@
-from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
-from config import DT
-from text_preprocessing import sentence_to_embedding, tokenize
 from semantics import compute_sentence_similarities
+from text_preprocessing import sentence_to_embedding, tokenize
 
 
-def gravity_wave(sentence, embeddings, vecs, pos, vel, strength=0.5):
+def gravity_wave(sentence, embeddings, vecs, pos, strength=0.5, threshold=0.3):
 
     tokens = tokenize(sentence)
 
@@ -13,13 +12,15 @@ def gravity_wave(sentence, embeddings, vecs, pos, vel, strength=0.5):
 
     if sentence_vec is None:
         print("No valid tokens present.")
-        return vel
+        return np.zeros_like(pos)
 
     sims = compute_sentence_similarities(sentence_vec, vecs)
 
-    for i in range(len(pos)):
-        if sims[i] > 0.3:
-            direction = -pos[i]
-            vel[i] += direction * strength * sims[i] * DT
+    gravity_force = np.zeros_like(pos)
 
-    return vel
+    for i in range(len(pos)):
+        if sims[i] > threshold:
+            direction = -pos[i]  # toward origin
+            gravity_force[i] += direction * strength * sims[i]
+
+    return gravity_force  # ndarray of shape (N, 2)

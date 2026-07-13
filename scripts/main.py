@@ -31,6 +31,15 @@ def main():
     clusters, labels = None, None
     for step in range(NUM_STEPS):
         pos = simulation.step()
+        """ will be used once i start working on and testing inputs
+        user_sentence = input("Sentence: ")
+
+        pos = simulation.step(
+            sentence=user_sentence,
+            embeddings=embeddings,
+            vecs=vecs,
+        )
+        """
 
         if step % 200 == 0:
             clusters, labels = cluster_embeddings(vecs, words, NUM_CLUSTERS)

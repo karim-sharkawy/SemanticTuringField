@@ -1,6 +1,7 @@
 import numpy as np
 
-from src.forces import compute_forces
+from forces import compute_forces
+from gravity_wave import gravity_wave
 
 
 class STFSimulation:
@@ -17,10 +18,16 @@ class STFSimulation:
         self.pos = np.random.rand(self.N, 2) * 2.0
         self.vel = np.zeros_like(self.pos)
 
-    def step(self):
+    def step(self, sentence=None, embeddings=None, vecs=None):
 
+        # original semantic force
         F = compute_forces(self.pos, self.S, self.alpha, self.beta)
 
+        # gravity wave
+        if sentence is not None and embeddings is not None and vecs is not None:
+            F += gravity_wave(sentence, embeddings, vecs, self.pos)
+
+        # full force
         self.vel += F * self.dt
         self.pos += self.vel * self.dt
 

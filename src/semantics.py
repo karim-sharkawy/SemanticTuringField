@@ -20,8 +20,6 @@ def build_similarity_matrix(vecs):
 
     return S
 
+
 def compute_sentence_similarities(sentence_embedding, vecs):
-    return cosine_similarity(
-        sentence_embedding.reshape(1, -1),
-        vecs
-    )[0]
+    return cosine_similarity(sentence_embedding.reshape(1, -1), vecs)[0]
