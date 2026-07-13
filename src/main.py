@@ -9,11 +9,10 @@ from src.utils.config import *
 from src.visualization.clustering import cluster_embeddings
 from src.visualization.plotting import plot_positions
 
-current_sentence: Optional[str] = None
-gravity_steps_remaining: int = 0
-
 
 def main() -> None:
+    current_sentence: Optional[str] = None
+    gravity_steps_remaining = 0
 
     try:
         embeddings: Dict[str, np.ndarray] = np.load(
