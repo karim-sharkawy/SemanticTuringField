@@ -1,14 +1,19 @@
+from typing import Optional
+
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.lines import Line2D
 
 
-def plot_positions(pos, clusters, labels, step):
+def plot_positions(
+    pos: np.ndarray, clusters: Optional[np.ndarray], labels: Optional[list[str]], step: int
+) -> None:
 
     plt.clf()
 
     plt.scatter(pos[:, 0], pos[:, 1], c=clusters, s=8, cmap="tab10", alpha=0.7)
 
-    handles = []
+    handles: list[Line2D] = []
 
     cmap = plt.cm.get_cmap("tab10")
 
