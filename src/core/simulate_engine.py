@@ -98,3 +98,21 @@ class STFSimulation:
         self.vel = np.zeros_like(
             self.pos
         )
+
+    # Parameter Utilities
+    def parameters(self):
+        """
+        Current simulation parameters.
+        """
+
+        return {
+
+            "alpha": self.alpha,
+
+            "beta": self.beta,
+
+            "dt": self.dt,
+
+            "damping": self.damping,
+
+        }
