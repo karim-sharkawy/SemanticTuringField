@@ -1,52 +1,100 @@
-from typing import Dict, Optional
+"""
+simulate_engine.py
+
+Core physics engine for the Semantic Turing Field.
+"""
 
 import numpy as np
 
-from src.core.boundaries import boundary_force
-from src.core.forces import compute_forces
-from src.core.gravity_wave import gravity_wave
+from .forces import compute_forces
+from .gravity_wave import gravity_wave
+from .boundaries import boundary_force
 
 
 class STFSimulation:
+
     def __init__(
         self,
-        similarity_matrix: np.ndarray,
-        alpha: float = 0.95,
-        beta: float = 0.2,
-        dt: float = 0.05,
-        damping: float = 0.99,
-    ) -> None:
-        self.S: np.ndarray = similarity_matrix
+        similarity_matrix,
+        alpha=0.95,
+        beta=0.20,
+        dt=0.05,
+        damping=0.99,
+    ):
 
-        self.alpha: float = alpha
-        self.beta: float = beta
-        self.dt: float = dt
-        self.damping: float = damping
+        self.S = similarity_matrix
 
-        self.N: int = len(similarity_matrix)
+        self.alpha = alpha
+        self.beta = beta
 
-        self.pos: np.ndarray = np.random.rand(self.N, 2) * 2.0
-        self.vel: np.ndarray = np.zeros_like(self.pos)
+        self.dt = dt
+        self.damping = damping
+
+        self.N = len(similarity_matrix)
+
+        self.reset()
 
     def step(
         self,
-        sentence: Optional[str] = None,
-        embeddings: Optional[Dict[str, np.ndarray]] = None,
-        vecs: Optional[np.ndarray] = None,
-    ) -> np.ndarray:
+        sentence=None,
+        embeddings=None,
+        vecs=None,
+    ):
+        """
+        Advance the simulation by one timestep.
+        """
 
-        # original semantic force
-        F: np.ndarray = compute_forces(self.pos, self.S, self.alpha, self.beta)
-        F += boundary_force(self.pos)
+        ### Total Force
+        total_force = compute_forces(
+            self.pos,
+            self.S,
+            self.alpha,
+            self.beta,
+        )
 
-        # gravity wave
-        if sentence is not None and embeddings is not None and vecs is not None:
-            F += gravity_wave(sentence, embeddings, vecs, self.pos)
+        # Gravity Wave
+        if (
+            sentence is not None
+            and embeddings is not None
+            and vecs is not None
+        ):
 
-        # full force
-        self.vel += F * self.dt
+            total_force += gravity_wave(
+                sentence,
+                embeddings,
+                vecs,
+                self.pos,
+            )
+
+        # Boundary
+
+        total_force += boundary_force(
+            self.pos
+        )
+
+        # Physics Integration
+        self.vel += total_force * self.dt
+
         self.pos += self.vel * self.dt
 
         self.vel *= self.damping
 
         return self.pos
+
+    ### Reset
+    def reset(self):
+        """
+        Reset the particle field.
+        """
+
+        self.pos = (
+            np.random.rand(
+                self.N,
+                2,
+            )
+            * 2.0
+        )
+
+        self.vel = np.zeros_like(
+            self.pos
+        )
