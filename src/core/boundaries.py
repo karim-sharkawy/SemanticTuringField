@@ -1,20 +1,63 @@
+"""
+boundaries.py
+
+Soft boundary forces for the Semantic Turing Field.
+
+Particles outside the simulation radius are gently pulled
+back toward the center instead of hitting an invisible wall.
+"""
+
 import numpy as np
 
 
-# Gentle restoring force toward the origin once particles leave the simulation radius.
-# Looks better than an invisible wall
-def boundary_force(pos: np.ndarray, radius: float = 5.0, strength: float = 0.15) -> np.ndarray:
-    F: np.ndarray = np.zeros_like(pos)
+def boundary_force(
+    positions,
+    radius=5.0,
+    strength=0.20,
+):
+    """
+    Compute restoring forces for particles
+    outside the simulation radius.
 
-    distances: np.ndarray = np.linalg.norm(pos, axis=1)
+    Parameters
+    ----------
+    positions : ndarray (N,2)
 
-    outside: np.ndarray = distances > radius
+    radius : float
+        Radius of the simulation.
 
-    if np.any(outside):
-        directions: np.ndarray = -pos[outside] / distances[outside][:, None]
+    strength : float
+        Spring strength.
 
-        magnitudes: np.ndarray = strength * (distances[outside] - radius)
+    Returns
+    -------
+    ndarray (N,2)
+    """
 
-        F[outside] = directions * magnitudes[:, None]
+    forces = np.zeros_like(positions)
 
-    return F
+    distances = np.linalg.norm(
+        positions,
+        axis=1,
+    )
+
+    outside = distances > radius
+
+    if not np.any(outside):
+        return forces
+
+    direction = (
+        -positions[outside]
+        / distances[outside][:, None]
+    )
+
+    magnitude = (
+        distances[outside] - radius
+    ) * strength
+
+    forces[outside] = (
+        direction
+        * magnitude[:, None]
+    )
+
+    return forces
