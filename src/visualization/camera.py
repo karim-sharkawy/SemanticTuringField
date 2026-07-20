@@ -1,58 +1,144 @@
-import pygame
+"""
+camera.py
 
+Camera system for the Semantic Turing Field.
+
+Responsibilities
+----------------
+- Convert world coordinates to screen coordinates
+- Convert screen coordinates to world coordinates
+- Mouse drag panning
+- Mouse wheel zooming
+"""
+
+import pygame
 
 class Camera:
 
-    def __init__(self):
+    def __init__(
+        self,
+        width=1200,
+        height=800,
+    ):
 
-        self.zoom = 80
+        # Window dimensions
+        self.width = width
+        self.height = height
 
-        self.offset = pygame.Vector2(600, 400)
+        # Camera state
+        self.zoom = 80.0
 
+        self.min_zoom = 10.0
+        self.max_zoom = 400.0
+
+        # World origin appears in the middle
+        self.offset = pygame.Vector2(
+            width / 2,
+            height / 2,
+        )
+
+        # Mouse dragging
         self.dragging = False
 
-    def world_to_screen(self, pos):
+    ### Coordinate transforms
+    def world_to_screen(self, world_pos):
+        """
+        Convert world coordinates
+        to screen pixels.
+        """
 
         return (
-            pos[0] * self.zoom + self.offset.x,
-            pos[1] * self.zoom + self.offset.y,
+            world_pos[0] * self.zoom + self.offset.x,
+            world_pos[1] * self.zoom + self.offset.y,
         )
 
-    def screen_to_world(self, pos):
+    def screen_to_world(self, screen_pos):
+        """
+        Convert screen pixels
+        to world coordinates.
+        """
 
         return (
-            (pos[0] - self.offset.x) / self.zoom,
-            (pos[1] - self.offset.y) / self.zoom,
+            (screen_pos[0] - self.offset.x) / self.zoom,
+            (screen_pos[1] - self.offset.y) / self.zoom,
         )
-    
+
+    ### Event handling
     def handle_event(self, event):
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        # Begin drag
+        if (
+            event.type == pygame.MOUSEBUTTONDOWN
+            and event.button == 1
+        ):
+            self.dragging = True
 
-            if event.button == 1:
+        # End drag
+        elif (
+            event.type == pygame.MOUSEBUTTONUP
+            and event.button == 1
+        ):
+            self.dragging = False
 
-                self.dragging = True
+        # Drag camera
+        elif (
+            event.type == pygame.MOUSEMOTION
+            and self.dragging
+        ):
 
-        elif event.type == pygame.MOUSEBUTTONUP:
+            self.offset += pygame.Vector2(
+                event.rel
+            )
 
-            if event.button == 1:
-
-                self.dragging = False
-
-        elif event.type == pygame.MOUSEMOTION:
-
-            if self.dragging:
-
-                self.offset += pygame.Vector2(event.rel)
-
+        # Mouse wheel zoom
         elif event.type == pygame.MOUSEWHEEL:
 
-            if event.y > 0:
+            self.zoom_at_mouse(event.y)
 
-                self.zoom *= 1.1
+    ### Zoom
+    def zoom_at_mouse(self, wheel_direction):
+        """
+        Zoom toward the mouse cursor instead
+        of the screen center.
+        """
 
-            else:
+        mouse = pygame.mouse.get_pos()
 
-                self.zoom /= 1.1
+        # World position BEFORE zoom
+        before = self.screen_to_world(mouse)
 
-            self.zoom = max(10, min(self.zoom, 400))
+        # Change zoom
+        if wheel_direction > 0:
+            self.zoom *= 1.1
+        else:
+            self.zoom /= 1.1
+
+        self.zoom = max(
+            self.min_zoom,
+            min(self.zoom, self.max_zoom),
+        )
+
+        # World position AFTER zoom
+        after = self.screen_to_world(mouse)
+
+        # Adjust offset so the same world
+        # point remains beneath the cursor.
+        dx = (after[0] - before[0]) * self.zoom
+        dy = (after[1] - before[1]) * self.zoom
+
+        self.offset.x += dx
+        self.offset.y += dy
+
+    ### Utilities
+    def reset(self):
+        """
+        Reset the camera to its
+        default position.
+        """
+
+        self.zoom = 80.0
+
+        self.offset = pygame.Vector2(
+            self.width / 2,
+            self.height / 2,
+        )
