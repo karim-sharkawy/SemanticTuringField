@@ -46,57 +46,33 @@ class InputHandler:
             False if application should quit.
         """
 
-        #
         # Quit
-        #
-
         if event.type == pygame.QUIT:
             return False
 
-        #
         # Camera always gets events first.
-        #
-
         self.camera.handle_event(event)
 
-        #
         # Keyboard
-        #
-
         if event.type == pygame.KEYDOWN:
 
-            #
             # Quit
-            #
-
             if event.key == pygame.K_ESCAPE:
                 return False
 
-            #
             # Pause
-            #
-
             elif event.key == pygame.K_SPACE:
                 self.paused = not self.paused
 
-            #
             # Single step
-            #
-
             elif event.key == pygame.K_RIGHT:
                 self.single_step = True
 
-            #
             # Reset
-            #
-
             elif event.key == pygame.K_r:
                 simulation.reset()
 
-            #
             # Alpha
-            #
-
             elif event.key == pygame.K_q:
                 simulation.alpha += 0.05
 
@@ -106,20 +82,14 @@ class InputHandler:
                     simulation.alpha - 0.05,
                 )
 
-            #
             # Beta
-            #
-
             elif event.key == pygame.K_w:
                 simulation.beta += 0.05
 
             elif event.key == pygame.K_s:
                 simulation.beta -= 0.05
 
-            #
             # Damping
-            #
-
             elif event.key == pygame.K_e:
                 simulation.damping = min(
                     0.999,
@@ -132,10 +102,7 @@ class InputHandler:
                     simulation.damping - 0.005,
                 )
 
-            #
             # Time step
-            #
-
             elif event.key == pygame.K_t:
                 simulation.dt += 0.005
 
@@ -153,17 +120,11 @@ class InputHandler:
         should advance this frame.
         """
 
-        #
         # Normal running
-        #
-
         if not self.paused:
             return True
 
-        #
         # Single-step mode
-        #
-
         if self.single_step:
 
             self.single_step = False

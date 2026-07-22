@@ -11,6 +11,7 @@ Responsibilities
 - Maintain 60 FPS
 """
 
+import numpy as np
 import pygame
 
 from src.visualization.colors import cluster_color
@@ -83,10 +84,17 @@ class Renderer:
 
             x, y = camera.world_to_screen(pos)
 
+            if not np.isfinite(x) or not np.isfinite(y):
+                print(f"Invalid particle {i}: ({x}, {y})")
+                print(pos)
+                raise RuntimeError("Particle position became invalid.")
+
             pygame.draw.circle(
                 self.screen,
                 cluster_color(clusters[i]),
-                (int(x), int(y)),
+                #(int(x), int(y)),
+                (x, y),
+                #(int(round(x)), int(round(y))),
                 self.particle_radius,
             )
 

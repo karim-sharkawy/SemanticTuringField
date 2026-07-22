@@ -124,10 +124,7 @@ def main():
 
     while running:
 
-        #
         # Handle Events
-        #
-
         for event in pygame.event.get():
 
             if not input_handler.handle_event(
@@ -137,10 +134,7 @@ def main():
                 running = False
                 break
 
-        #
         # Advance Simulation
-        #
-
         if running and input_handler.should_step():
 
             simulation.step(
@@ -149,10 +143,7 @@ def main():
                 vecs=vecs,
             )
 
-        #
         # Draw
-        #
-
         renderer.draw(
             camera=camera,
             positions=simulation.pos,
