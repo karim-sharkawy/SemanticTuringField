@@ -41,7 +41,9 @@ def boundary_force(
         axis=1,
     )
 
-    outside = distances > radius
+    finite = np.isfinite(distances)
+
+    outside = (distances > radius) & finite
 
     if not np.any(outside):
         return forces

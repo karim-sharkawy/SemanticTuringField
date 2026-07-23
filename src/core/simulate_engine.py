@@ -79,6 +79,16 @@ class STFSimulation:
 
         self.vel *= self.damping
 
+        speed = np.linalg.norm(self.vel, axis=1)
+
+        max_speed = 1.0
+
+        mask = speed > max_speed
+
+        self.vel[mask] *= (
+            max_speed / speed[mask]
+        )[:, None]
+
         return self.pos
 
     ### Reset
