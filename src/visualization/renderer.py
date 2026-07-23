@@ -11,6 +11,10 @@ Responsibilities
 - Maintain 60 FPS
 """
 
+from __future__ import annotations
+
+from typing import Any
+
 import numpy as np
 import pygame
 
@@ -19,35 +23,35 @@ from src.visualization.colors import cluster_color
 
 class Renderer:
 
-    def __init__(self, width=1200, height=800):
+    def __init__(self, width: int = 1200, height: int = 800) -> None:
 
         pygame.init()
 
-        self.width = width
-        self.height = height
+        self.width: int = width
+        self.height: int = height
 
-        self.screen = pygame.display.set_mode((width, height))
+        self.screen: pygame.Surface = pygame.display.set_mode((width, height))
 
         pygame.display.set_caption("Semantic Turing Field")
 
-        self.clock = pygame.time.Clock()
+        self.clock: pygame.time.Clock = pygame.time.Clock()
 
-        self.font = pygame.font.SysFont("Arial", 16)
+        self.font: pygame.font.Font = pygame.font.SysFont("Arial", 16)
 
-        self.background = (18, 18, 18)
+        self.background: tuple[int, int, int] = (18, 18, 18)
 
-        self.particle_radius = 4
+        self.particle_radius: int = 4
 
     def draw(
         self,
-        camera,
-        positions,
-        clusters,
-        labels,
-        words,
-        simulation,
-        paused,
-    ):
+        camera: Any,
+        positions: np.ndarray,
+        clusters: np.ndarray,
+        labels: list[str],
+        words: list[str],
+        simulation: Any,
+        paused: bool,
+    ) -> None:
 
         self.screen.fill(self.background)
 
@@ -75,10 +79,10 @@ class Renderer:
     ### Particle Drawing
     def draw_particles(
         self,
-        camera,
-        positions,
-        clusters,
-    ):
+        camera: Any,
+        positions: np.ndarray,
+        clusters: np.ndarray,
+    ) -> None:
 
         for i, pos in enumerate(positions):
 
@@ -92,23 +96,21 @@ class Renderer:
             pygame.draw.circle(
                 self.screen,
                 cluster_color(clusters[i]),
-                #(int(x), int(y)),
                 (x, y),
-                #(int(round(x)), int(round(y))),
                 self.particle_radius,
             )
 
     ### Hover Labels
     def draw_hover_label(
         self,
-        camera,
-        positions,
-        words,
-    ):
+        camera: Any,
+        positions: np.ndarray,
+        words: list[str],
+    ) -> None:
 
-        mouse = pygame.mouse.get_pos()
+        mouse: tuple[int, int] = pygame.mouse.get_pos()
 
-        hovered = None
+        hovered: int | None = None
 
         for i, pos in enumerate(positions):
 
@@ -125,7 +127,7 @@ class Renderer:
         if hovered is None:
             return
 
-        label = self.font.render(
+        label: pygame.Surface = self.font.render(
             words[hovered],
             True,
             (255, 255, 255),
@@ -142,13 +144,13 @@ class Renderer:
     ### UI
     def draw_ui(
         self,
-        simulation,
-        paused,
-    ):
+        simulation: Any,
+        paused: bool,
+    ) -> None:
 
-        status = "Paused" if paused else "Running"
+        status: str = "Paused" if paused else "Running"
 
-        ui = [
+        ui: list[str] = [
 
             f"Status: {status}",
 
@@ -182,11 +184,11 @@ class Renderer:
 
         ]
 
-        y = 10
+        y: int = 10
 
         for line in ui:
 
-            surface = self.font.render(
+            surface: pygame.Surface = self.font.render(
                 line,
                 True,
                 (230, 230, 230),

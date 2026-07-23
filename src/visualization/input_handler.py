@@ -13,30 +13,34 @@ Responsibilities
 - Reset simulation
 """
 
+from __future__ import annotations
+
+from typing import Any, Optional
+
 import pygame
 
 
 class InputHandler:
 
-    def __init__(self, camera):
+    def __init__(self, camera: Any) -> None:
 
-        self.camera = camera
+        self.camera: Any = camera
 
         # Simulation state
-        self.paused = False
-        self.single_step = False
+        self.paused: bool = False
+        self.single_step: bool = False
 
         # Gravity-wave sentence
-        self.current_sentence = None
+        self.current_sentence: Optional[str] = None
 
         # Future feature
-        self.gravity_steps_remaining = 0
+        self.gravity_steps_remaining: int = 0
 
     def handle_event(
         self,
-        event,
-        simulation,
-    ):
+        event: Any,
+        simulation: Any,
+    ) -> bool:
         """
         Handle one pygame event.
 
@@ -114,7 +118,7 @@ class InputHandler:
 
         return True
 
-    def should_step(self):
+    def should_step(self) -> bool:
         """
         Determine whether the simulation
         should advance this frame.

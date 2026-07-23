@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import pygame
 
-TAB10 = [
+TAB10: list[tuple[int, int, int]] = [
     (31, 119, 180),
     (255, 127, 14),
     (44, 160, 44),
@@ -14,5 +16,5 @@ TAB10 = [
 ]
 
 
-def cluster_color(cluster):
+def cluster_color(cluster: int) -> tuple[int, int, int]:
     return TAB10[cluster % len(TAB10)]
