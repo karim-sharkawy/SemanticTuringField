@@ -3,7 +3,7 @@ from typing import Dict, Optional
 import numpy as np
 
 from src.nlp.semantics import compute_sentence_similarities
-from src.nlp.text_preprocessing import sentence_to_embedding, tokenize
+from src.nlp.text_preprocessing import sentence_to_embedding, stopword_removal
 
 
 def gravity_wave(
@@ -15,7 +15,7 @@ def gravity_wave(
     threshold: float = 0.3,
 ) -> np.ndarray:
 
-    tokens: list[str] = tokenize(sentence)
+    tokens: list[str] = stopword_removal(sentence)
 
     sentence_vec: Optional[np.ndarray] = sentence_to_embedding(tokens, embeddings)
 
