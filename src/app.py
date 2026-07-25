@@ -133,12 +133,14 @@ def main() -> None:
                 break
 
         # Advance Simulation
-        if running and input_handler.should_step():
+        if input_handler.use_gravity():
             simulation.step(
                 sentence=input_handler.current_sentence,
                 embeddings=embeddings,
                 vecs=vecs,
             )
+
+        else: simulation.step()
 
         # Draw
         renderer.draw(
@@ -149,6 +151,7 @@ def main() -> None:
             words=words,
             simulation=simulation,
             paused=input_handler.paused,
+            input_handler=input_handler,
         )
 
         pygame.display.set_caption(f"Semantic Turing Field | FPS: {renderer.clock.get_fps():.1f}")

@@ -178,3 +178,9 @@ class InputHandler:
             return True
 
         return False
+
+    def use_gravity(self):
+        if self.gravity_frames > 0:
+            self.gravity_frames -= 1
+            return True
+        return False
