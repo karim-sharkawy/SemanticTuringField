@@ -2,7 +2,6 @@ import string
 from typing import Dict, Optional
 
 import numpy as np
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 
 def tokenize(sentence: str) -> list[str]:
