@@ -37,6 +37,14 @@ class InputHandler:
         # Future feature
         self.gravity_steps_remaining: int = 0
 
+        self.typing = False
+
+        self.text = ""
+
+        self.gravity_frames = 0
+
+        self.current_sentence = None
+
     def handle_event(
         self,
         event: Any,
@@ -60,6 +68,28 @@ class InputHandler:
 
         # Keyboard
         if event.type == pygame.KEYDOWN:
+
+            if self.typing:
+                if event.key == pygame.K_RETURN:
+                    self.current_sentence = self.text
+                    self.gravity_frames = 75
+                    self.text = ""
+                    self.typing = False
+
+                    return True
+
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+
+                else:
+                    self.text += event.unicode
+
+                return True
+
+            if event.key == pygame.K_RETURN:
+                self.typing = True
+                return True
+
             # Quit
             if event.key == pygame.K_ESCAPE:
                 return False
