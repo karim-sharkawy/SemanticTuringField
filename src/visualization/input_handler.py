@@ -68,7 +68,6 @@ class InputHandler:
 
         # Keyboard
         if event.type == pygame.KEYDOWN:
-
             if self.typing:
                 if event.key == pygame.K_RETURN:
                     self.current_sentence = self.text

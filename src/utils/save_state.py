@@ -7,10 +7,11 @@ Save and restore the stf.
 import json
 
 import numpy as np
-from config import DEFAULT_SAVE
+
+from src.utils.config import DEFAULT_SAVE
 
 
-def save_satte(simulation, camera, filename: str = DEFAULT_SAVE):
+def save_state(simulation, camera, filename: str = DEFAULT_SAVE):
     data = {
         "positions": simulation.pos.tolist(),
         "velocities": simulation.vel.tolist(),

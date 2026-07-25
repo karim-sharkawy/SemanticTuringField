@@ -7,7 +7,6 @@ Coordinates the simulation, visualization, and user interaction.
 
 from __future__ import annotations
 
-import time
 from typing import Dict, Tuple
 
 import numpy as np
@@ -140,7 +139,8 @@ def main() -> None:
                 vecs=vecs,
             )
 
-        else: simulation.step()
+        else:
+            simulation.step()
 
         # Draw
         renderer.draw(
@@ -160,13 +160,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    print("Starting timer...")
-    start_time: float = time.time()
-
-    try:
-        main()
-    finally:
-        end_time: float = time.time()
-        elapsed_time: float = end_time - start_time
-
-        print(f"Code exucted in: {elapsed_time:.4f} seconds")
+    main()

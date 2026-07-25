@@ -73,7 +73,7 @@ class Renderer:
         )
 
         self.draw_sentence_box(input_handler)
-        
+
         pygame.display.flip()
 
         self.clock.tick(60)
@@ -193,7 +193,7 @@ class Renderer:
 
         pygame.draw.rect(
             self.screen,
-            (40,40,40),
+            (40, 40, 40),
             (0, y, self.width, 45),
         )
 
@@ -206,7 +206,7 @@ class Renderer:
         surface = self.font.render(
             text,
             True,
-            (255,255,255),
+            (255, 255, 255),
         )
 
         self.screen.blit(
