@@ -29,6 +29,8 @@ class STFSimulation:
         self.dt = dt
         self.damping = damping
 
+        self.step_count = 0
+
         self.N = len(similarity_matrix)
 
         self.reset()
@@ -79,6 +81,7 @@ class STFSimulation:
 
         self.vel[mask] *= (max_speed / speed[mask])[:, None]
 
+        self.step_count += 1
         return self.pos
 
     ### Reset
@@ -86,6 +89,8 @@ class STFSimulation:
         """
         Reset the particle field.
         """
+
+        self.step_count = 0
 
         self.pos = (
             np.random.rand(

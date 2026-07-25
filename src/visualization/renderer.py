@@ -162,6 +162,8 @@ class Renderer:
             "RIGHT : Step",
             "Mouse Wheel : Zoom",
             "Drag : Pan",
+            "F5 : Save State",
+            "F9 : Load State",
         ]
 
         y: int = 10

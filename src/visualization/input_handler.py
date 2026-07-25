@@ -19,6 +19,8 @@ from typing import Any, Optional
 
 import pygame
 
+from src.utils.save_state import load_state, save_state
+
 
 class InputHandler:
     def __init__(self, camera: Any) -> None:
@@ -102,6 +104,20 @@ class InputHandler:
                 simulation.damping = max(
                     0.0,
                     simulation.damping - 0.005,
+                )
+
+            # Save
+            elif event.key == pygame.K_F5:
+                save_state(
+                    simulation,
+                    self.camera,
+                )
+
+            # Load
+            elif event.key == pygame.K_F9:
+                load_state(
+                    simulation,
+                    self.camera,
                 )
 
             # Time step

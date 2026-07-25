@@ -1,13 +1,13 @@
 from typing import Dict, Optional
 
 import numpy as np
+from src.visualization.clustering import cluster_embeddings
+from src.visualization.plotting import plot_positions
 
 from src.core.simulate_engine import STFSimulation
 from src.nlp.embeddings import load_embeddings
 from src.nlp.semantics import build_similarity_matrix, lower_dimensions
 from src.utils.config import *
-from src.visualization.clustering import cluster_embeddings
-from src.visualization.plotting import plot_positions
 
 
 def main() -> None:
