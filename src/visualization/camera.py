@@ -19,7 +19,6 @@ import pygame
 
 
 class Camera:
-
     def __init__(
         self,
         width: int = 1200,
@@ -72,32 +71,19 @@ class Camera:
     def handle_event(self, event: Any) -> None:
 
         # Begin drag
-        if (
-            event.type == pygame.MOUSEBUTTONDOWN
-            and event.button == 1
-        ):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             self.dragging = True
 
         # End drag
-        elif (
-            event.type == pygame.MOUSEBUTTONUP
-            and event.button == 1
-        ):
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             self.dragging = False
 
         # Drag camera
-        elif (
-            event.type == pygame.MOUSEMOTION
-            and self.dragging
-        ):
-
-            self.offset += pygame.Vector2(
-                event.rel
-            )
+        elif event.type == pygame.MOUSEMOTION and self.dragging:
+            self.offset += pygame.Vector2(event.rel)
 
         # Mouse wheel zoom
         elif event.type == pygame.MOUSEWHEEL:
-
             self.zoom_at_mouse(event.y)
 
     ### Zoom

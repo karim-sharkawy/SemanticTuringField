@@ -6,13 +6,12 @@ Core physics engine for the Semantic Turing Field.
 
 import numpy as np
 
+from .boundaries import boundary_force
 from .forces import compute_forces
 from .gravity_wave import gravity_wave
-from .boundaries import boundary_force
 
 
 class STFSimulation:
-
     def __init__(
         self,
         similarity_matrix,
@@ -53,12 +52,7 @@ class STFSimulation:
         )
 
         # Gravity Wave
-        if (
-            sentence is not None
-            and embeddings is not None
-            and vecs is not None
-        ):
-
+        if sentence is not None and embeddings is not None and vecs is not None:
             total_force += gravity_wave(
                 sentence,
                 embeddings,
@@ -68,9 +62,7 @@ class STFSimulation:
 
         # Boundary
 
-        total_force += boundary_force(
-            self.pos
-        )
+        total_force += boundary_force(self.pos)
 
         # Physics Integration
         self.vel += total_force * self.dt
@@ -85,9 +77,7 @@ class STFSimulation:
 
         mask = speed > max_speed
 
-        self.vel[mask] *= (
-            max_speed / speed[mask]
-        )[:, None]
+        self.vel[mask] *= (max_speed / speed[mask])[:, None]
 
         return self.pos
 
@@ -105,9 +95,7 @@ class STFSimulation:
             * 2.0
         )
 
-        self.vel = np.zeros_like(
-            self.pos
-        )
+        self.vel = np.zeros_like(self.pos)
 
     # Parameter Utilities
     def parameters(self):
@@ -116,13 +104,8 @@ class STFSimulation:
         """
 
         return {
-
             "alpha": self.alpha,
-
             "beta": self.beta,
-
             "dt": self.dt,
-
             "damping": self.damping,
-
         }

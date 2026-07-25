@@ -48,18 +48,10 @@ def boundary_force(
     if not np.any(outside):
         return forces
 
-    direction = (
-        -positions[outside]
-        / distances[outside][:, None]
-    )
+    direction = -positions[outside] / distances[outside][:, None]
 
-    magnitude = (
-        distances[outside] - radius
-    ) * strength
+    magnitude = (distances[outside] - radius) * strength
 
-    forces[outside] = (
-        direction
-        * magnitude[:, None]
-    )
+    forces[outside] = direction * magnitude[:, None]
 
     return forces

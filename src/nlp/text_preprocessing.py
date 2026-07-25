@@ -1,15 +1,18 @@
 import string
 from typing import Dict, Optional
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 import numpy as np
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+
 
 def tokenize(sentence: str) -> list[str]:
     return sentence.lower().translate(str.maketrans("", "", string.punctuation)).split()
 
+
 def stopword_removal(sentence: str) -> list[str]:
     tokens = tokenize(sentence)
     return [word for word in tokens if word not in ENGLISH_STOP_WORDS]
+
 
 def sentence_to_embedding(
     tokens: list[str], embeddings: Dict[str, np.ndarray]

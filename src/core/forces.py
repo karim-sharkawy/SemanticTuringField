@@ -15,12 +15,10 @@ def compute_forces(
     F = np.zeros_like(pos)
 
     for i in range(N):
-
         fx = 0.0
         fy = 0.0
 
         for j in range(N):
-
             dx = pos[i, 0] - pos[j, 0]
             dy = pos[i, 1] - pos[j, 1]
 
@@ -29,9 +27,7 @@ def compute_forces(
             direction_x = dx / distance
             direction_y = dy / distance
 
-            strength = -alpha * (
-                similarity_matrix[i, j] - beta
-            )
+            strength = -alpha * (similarity_matrix[i, j] - beta)
 
             fx += strength * direction_x
             fy += strength * direction_y

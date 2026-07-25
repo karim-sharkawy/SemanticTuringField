@@ -21,7 +21,6 @@ import pygame
 
 
 class InputHandler:
-
     def __init__(self, camera: Any) -> None:
 
         self.camera: Any = camera
@@ -59,7 +58,6 @@ class InputHandler:
 
         # Keyboard
         if event.type == pygame.KEYDOWN:
-
             # Quit
             if event.key == pygame.K_ESCAPE:
                 return False
@@ -130,7 +128,6 @@ class InputHandler:
 
         # Single-step mode
         if self.single_step:
-
             self.single_step = False
             return True
 

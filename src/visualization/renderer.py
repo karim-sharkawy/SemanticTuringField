@@ -22,7 +22,6 @@ from src.visualization.colors import cluster_color
 
 
 class Renderer:
-
     def __init__(self, width: int = 1200, height: int = 800) -> None:
 
         pygame.init()
@@ -85,7 +84,6 @@ class Renderer:
     ) -> None:
 
         for i, pos in enumerate(positions):
-
             x, y = camera.world_to_screen(pos)
 
             if not np.isfinite(x) or not np.isfinite(y):
@@ -113,14 +111,12 @@ class Renderer:
         hovered: int | None = None
 
         for i, pos in enumerate(positions):
-
             sx, sy = camera.world_to_screen(pos)
 
             dx = mouse[0] - sx
             dy = mouse[1] - sy
 
             if dx * dx + dy * dy < 100:
-
                 hovered = i
                 break
 
@@ -151,43 +147,26 @@ class Renderer:
         status: str = "Paused" if paused else "Running"
 
         ui: list[str] = [
-
             f"Status: {status}",
-
             f"Alpha: {simulation.alpha:.2f}",
-
             f"Beta: {simulation.beta:.2f}",
-
             f"Damping: {simulation.damping:.3f}",
-
             f"dt: {simulation.dt:.3f}",
-
             "",
-
             "Q/A : Alpha",
-
             "W/S : Beta",
-
             "E/D : Damping",
-
             "T/G : dt",
-
             "R : Reset",
-
             "SPACE : Pause",
-
             "RIGHT : Step",
-
             "Mouse Wheel : Zoom",
-
             "Drag : Pan",
-
         ]
 
         y: int = 10
 
         for line in ui:
-
             surface: pygame.Surface = self.font.render(
                 line,
                 True,

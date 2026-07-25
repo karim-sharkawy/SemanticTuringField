@@ -8,7 +8,7 @@ Coordinates the simulation, visualization, and user interaction.
 from __future__ import annotations
 
 import time
-from typing import Any, Dict, Tuple
+from typing import Dict, Tuple
 
 import numpy as np
 import pygame
@@ -23,7 +23,9 @@ from src.visualization.input_handler import InputHandler
 from src.visualization.renderer import Renderer
 
 
-def build_simulation() -> Tuple[STFSimulation, Dict[str, np.ndarray], list[str], np.ndarray, np.ndarray, list[str]]:
+def build_simulation() -> Tuple[
+    STFSimulation, Dict[str, np.ndarray], list[str], np.ndarray, np.ndarray, list[str]
+]:
     """
     Load embeddings and initialize the STF simulation.
     """
@@ -35,7 +37,6 @@ def build_simulation() -> Tuple[STFSimulation, Dict[str, np.ndarray], list[str],
         ).item()
 
     except FileNotFoundError:
-
         embeddings = load_embeddings(
             DATA_PATH,
             MAX_WORDS,
@@ -122,10 +123,8 @@ def main() -> None:
     running: bool = True
 
     while running:
-
         # Handle Events
         for event in pygame.event.get():
-
             if not input_handler.handle_event(
                 event,
                 simulation,
@@ -135,7 +134,6 @@ def main() -> None:
 
         # Advance Simulation
         if running and input_handler.should_step():
-
             simulation.step(
                 sentence=input_handler.current_sentence,
                 embeddings=embeddings,
@@ -153,10 +151,7 @@ def main() -> None:
             paused=input_handler.paused,
         )
 
-        pygame.display.set_caption(
-            f"Semantic Turing Field | "
-            f"FPS: {renderer.clock.get_fps():.1f}"
-        )
+        pygame.display.set_caption(f"Semantic Turing Field | FPS: {renderer.clock.get_fps():.1f}")
 
     pygame.quit()
 

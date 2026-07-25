@@ -25,10 +25,6 @@ def gravity_wave(
 
     sims: np.ndarray = compute_sentence_similarities(sentence_vec, vecs)
 
-    gravity_force: np.ndarray = (
-        -pos
-        * strength
-        * np.maximum(sims - threshold, 0)[:, None]
-    )
+    gravity_force: np.ndarray = -pos * strength * np.maximum(sims - threshold, 0)[:, None]
 
     return gravity_force  # ndarray of shape (N, 2)

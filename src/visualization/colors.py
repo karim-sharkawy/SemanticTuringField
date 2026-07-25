@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pygame
-
 TAB10: list[tuple[int, int, int]] = [
     (31, 119, 180),
     (255, 127, 14),
