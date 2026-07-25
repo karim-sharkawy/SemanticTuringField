@@ -2,8 +2,11 @@ import string
 from typing import Dict, Optional
 
 import numpy as np
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 
+# These functions are used for user-entered sentence only
+# Meaning these functions should appear in gravity_wave.py
 def tokenize(sentence: str) -> list[str]:
     return sentence.lower().translate(str.maketrans("", "", string.punctuation)).split()
 

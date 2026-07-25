@@ -20,17 +20,11 @@ def load_embeddings(path: str, max_words: int = MAX_WORDS) -> Dict[str, np.ndarr
 
         return embeddings
 
+
 def filter_embeddings(embeddings):
 
-    return {
+    return {word: vector for word, vector in embeddings.items() if word not in ENGLISH_STOP_WORDS}
 
-        word: vector
-
-        for word, vector in embeddings.items()
-
-        if word not in ENGLISH_STOP_WORDS
-
-    }
 
 def save_embeddings(EMBEDDINGS_PATH: str, embeddings: Dict[str, np.ndarray]) -> None:
     np.save(EMBEDDINGS_PATH, embeddings, allow_pickle=True)
