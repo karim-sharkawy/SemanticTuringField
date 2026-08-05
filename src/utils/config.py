@@ -15,4 +15,4 @@ DAMPING: float = 0.995
 
 NUM_CLUSTERS: int = 8
 
-NUM_STEPS: int = 100000
+NUM_STEPS: int = 5000
