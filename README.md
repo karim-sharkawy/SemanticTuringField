@@ -66,7 +66,7 @@ Open the browser demo using Streamlit:
 
 ```bash
 cd webui
-python -m streamlit run app.py
+streamlit run app.py
 ```
 
 The web demo lets users type a sentence, change the loaded vocabulary size, and observe the semantic field evolution instantly.
