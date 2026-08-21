@@ -1,28 +1,53 @@
+# Loading and preprocessing of word embeddings used by the STF
+
 from typing import Dict
 
 import numpy as np
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
+from src.nlp.text_preprocessing import is_valid_vocabulary_word
 from src.utils.config import *
 
 
 def load_embeddings(path: str, max_words: int = MAX_WORDS) -> Dict[str, np.ndarray]:
     embeddings: Dict[str, np.ndarray] = {}
 
-    with open(path, "r", encoding="utf-8") as f:
-        for index, line in enumerate(f):
-            if index >= max_words:
-                break
-            split_line: list[str] = line.strip().split()
-            word: str = split_line[0]
-            word_embedding: np.ndarray = np.array(split_line[1:], dtype=np.float64)
-            embeddings[word] = word_embedding
+    with open(
+        path,
+        "r",
+        encoding="utf-8",
+    ) as file:
+        for line in file:
+            if len(embeddings) >= max_words:  # Stop once we have enough valid words
+                break  # instead of index >= max_words
 
-        return embeddings
+            parts = line.strip().split()
+
+            if len(parts) < 2:
+                continue
+
+            word = parts[0]
+
+            if not is_valid_vocabulary_word(word):
+                continue  # Ignore unwanted vocabulary entries
+
+            try:
+                vector = np.asarray(
+                    parts[1:],
+                    dtype=np.float64,
+                )
+
+            except ValueError:
+                continue
+
+            embeddings[word] = vector
+
+    print(f"Loaded {len(embeddings)} valid embeddings.")
+
+    return embeddings
 
 
 def filter_embeddings(embeddings):
-
     return {word: vector for word, vector in embeddings.items() if word not in ENGLISH_STOP_WORDS}
 
 

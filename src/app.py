@@ -18,7 +18,17 @@ from src.core.simulate_engine import STFSimulation
 from src.nlp.clustering import cluster_embeddings
 from src.nlp.embeddings import load_embeddings
 from src.nlp.semantics import build_similarity_matrix, lower_dimensions
-from src.utils.config import ALPHA, BETA, DATA_PATH, DAMPING, DT, EMBEDDINGS_PATH, MAX_WORDS, NUM_CLUSTERS, NUM_STEPS
+from src.utils.config import (
+    ALPHA,
+    BETA,
+    DAMPING,
+    DATA_PATH,
+    DT,
+    EMBEDDINGS_PATH,
+    MAX_WORDS,
+    NUM_CLUSTERS,
+    NUM_STEPS,
+)
 from src.visualization.camera import Camera
 from src.visualization.input_handler import InputHandler
 from src.visualization.renderer import Renderer
@@ -48,9 +58,9 @@ def parse_args(argv: list[str] | None = None) -> Namespace:
     return parser.parse_args(argv)
 
 
-def build_simulation(max_words: int = MAX_WORDS) -> Tuple[
-    STFSimulation, Dict[str, np.ndarray], list[str], np.ndarray, np.ndarray, list[str]
-]:
+def build_simulation(
+    max_words: int = MAX_WORDS,
+) -> Tuple[STFSimulation, Dict[str, np.ndarray], list[str], np.ndarray, np.ndarray, list[str]]:
     """
     Load embeddings and initialize the STF simulation.
     """
@@ -193,9 +203,7 @@ def main(args: Namespace | list[str] | None = None) -> None:
             input_handler=input_handler,
         )
 
-        pygame.display.set_caption(
-            f"Semantic Turing Field | FPS: {renderer.clock.get_fps():.1f}"
-        )
+        pygame.display.set_caption(f"Semantic Turing Field | FPS: {renderer.clock.get_fps():.1f}")
 
     pygame.quit()
 
