@@ -4,7 +4,7 @@ MAX_WORDS: int = 500
 
 PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent
 DATA_PATH: str = "data/glove.2024.wikigiga.50d_small.txt"
-EMBEDDINGS_PATH: str = "data/embeddings_{MAX_WORDS}.npy"
+EMBEDDINGS_PATH: str = f"data/embeddings_{MAX_WORDS}.npy"
 DEFAULT_SAVE = PROJECT_ROOT / "data/field_state.json"
 
 ALPHA: float = 0.05
