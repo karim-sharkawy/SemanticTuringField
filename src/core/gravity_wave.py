@@ -36,10 +36,6 @@ def gravity_wave(
     )
 
     # pull semantically relevant particles toward the origin
-    gravity_force: np.ndarray = (
-        -pos
-        * strength
-        * np.maximum(sims - threshold, 0)[:, None]
-    )
+    gravity_force: np.ndarray = -pos * strength * np.maximum(sims - threshold, 0)[:, None]
 
     return gravity_force

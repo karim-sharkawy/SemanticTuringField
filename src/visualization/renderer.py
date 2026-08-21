@@ -18,11 +18,16 @@ from typing import Any
 import numpy as np
 import pygame
 
+from src.nlp.text_preprocessing import stopword_removal, tokenize
 from src.visualization.colors import cluster_color
 
 
 class Renderer:
-    def __init__(self, width: int = 1200, height: int = 800) -> None:
+    def __init__(
+        self,
+        width: int = 1200,
+        height: int = 800,
+    ) -> None:
 
         pygame.init()
 
@@ -35,11 +40,30 @@ class Renderer:
 
         self.clock: pygame.time.Clock = pygame.time.Clock()
 
-        self.font: pygame.font.Font = pygame.font.SysFont("Arial", 16)
+        self.font: pygame.font.Font = pygame.font.SysFont(
+            "Arial",
+            16,
+        )
 
-        self.background: tuple[int, int, int] = (18, 18, 18)
+        self.background: tuple[int, int, int] = (
+            18,
+            18,
+            18,
+        )
 
+        # Normal particle size
         self.particle_radius: int = 4
+
+        # Highlighted sentence particle size
+        self.sentence_particle_radius: int = 7
+
+        # Highlight color for words appearing in
+        # the user's sentence.
+        self.sentence_color: tuple[int, int, int] = (
+            255,
+            220,
+            80,
+        )
 
     def draw(
         self,
@@ -55,10 +79,18 @@ class Renderer:
 
         self.screen.fill(self.background)
 
+        # Determine which particles belong
+        # to the current sentence.
+        sentence_indices = self.get_sentence_indices(
+            input_handler.current_sentence,
+            words,
+        )
+
         self.draw_particles(
             camera,
             positions,
             clusters,
+            sentence_indices,
         )
 
         self.draw_hover_label(
@@ -78,12 +110,38 @@ class Renderer:
 
         self.clock.tick(60)
 
-    ### Particle Drawing
+    # Sentence highlighting
+    def get_sentence_indices(
+        self,
+        sentence: str | None,
+        words: list[str],
+    ) -> set[int]:
+        """
+        Return the particle indices corresponding
+        to valid words in the user's current sentence.
+
+        Stopwords and words outside the vocabulary
+        are ignored.
+        """
+
+        if not sentence:
+            return set()
+
+        tokens = tokenize(sentence)
+
+        tokens = stopword_removal(tokens)
+
+        sentence_words = set(tokens)
+
+        return {index for index, word in enumerate(words) if word in sentence_words}
+
+    # Particle Drawing
     def draw_particles(
         self,
         camera: Any,
         positions: np.ndarray,
         clusters: np.ndarray,
+        sentence_indices: set[int],
     ) -> None:
 
         for i, pos in enumerate(positions):
@@ -91,17 +149,29 @@ class Renderer:
 
             if not np.isfinite(x) or not np.isfinite(y):
                 print(f"Invalid particle {i}: ({x}, {y})")
+
                 print(pos)
+
                 raise RuntimeError("Particle position became invalid.")
+
+            # Sentence words are visually emphasized.
+            if i in sentence_indices:
+                color = self.sentence_color
+                radius = self.sentence_particle_radius
+
+            else:
+                color = cluster_color(clusters[i])
+
+                radius = self.particle_radius
 
             pygame.draw.circle(
                 self.screen,
-                cluster_color(clusters[i]),
+                color,
                 (x, y),
-                self.particle_radius,
+                radius,
             )
 
-    ### Hover Labels
+    # Hover Labels
     def draw_hover_label(
         self,
         camera: Any,
@@ -140,14 +210,14 @@ class Renderer:
             ),
         )
 
-    ### UI
+    # UI
     def draw_ui(
         self,
         simulation: Any,
         paused: bool,
     ) -> None:
 
-        status: str = "Paused" if paused else "Running"
+        status = "Paused" if paused else "Running"
 
         ui: list[str] = [
             f"Status: {status}",
@@ -167,6 +237,8 @@ class Renderer:
             "Drag : Pan",
             "F5 : Save State",
             "F9 : Load State",
+            "",
+            "Yellow particles = sentence words",
         ]
 
         y: int = 10
@@ -188,17 +260,30 @@ class Renderer:
 
             y += 22
 
-    def draw_sentence_box(self, input_handler):
+    # Sentence Input Box
+    def draw_sentence_box(
+        self,
+        input_handler: Any,
+    ) -> None:
+
         y = self.height - 45
 
         pygame.draw.rect(
             self.screen,
             (40, 40, 40),
-            (0, y, self.width, 45),
+            (
+                0,
+                y,
+                self.width,
+                45,
+            ),
         )
 
         if input_handler.typing:
             text = "> " + input_handler.text + "_"
+
+        elif input_handler.current_sentence:
+            text = "Sentence: " + input_handler.current_sentence
 
         else:
             text = "Press ENTER to type a sentence"
@@ -211,5 +296,8 @@ class Renderer:
 
         self.screen.blit(
             surface,
-            (10, y + 12),
+            (
+                10,
+                y + 12,
+            ),
         )
