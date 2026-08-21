@@ -6,18 +6,6 @@ from src.nlp.semantics import compute_sentence_similarities
 from src.nlp.text_preprocessing import sentence_to_embedding, stopword_removal, tokenize
 
 
-from typing import Dict, Optional
-
-import numpy as np
-
-from src.nlp.semantics import compute_sentence_similarities
-from src.nlp.text_preprocessing import (
-    sentence_to_embedding,
-    stopword_removal,
-    tokenize,
-)
-
-
 def gravity_wave(
     sentence: str,
     embeddings: Dict[str, np.ndarray],
