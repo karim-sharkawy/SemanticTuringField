@@ -7,7 +7,7 @@ from src.utils.config import *
 
 
 def load_embeddings(path: str, max_words: int = MAX_WORDS) -> Dict[str, np.ndarray]:
-    embeddings: Dict[str, np.ndarray] = {}  # {"word": np.array([...]), ...}
+    embeddings: Dict[str, np.ndarray] = {}
 
     with open(path, "r", encoding="utf-8") as f:
         for index, line in enumerate(f):
