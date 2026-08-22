@@ -4,6 +4,8 @@ The Semantic Turing Field (STF) is an experimental visualization that treats wor
 
 Sentences perturb the field like external forces, causing related concepts to attract, repel, and self-organize in real time.
 
+![Semantic Turing Field Demo](assets/gifs/stf_demo.gif)
+
 ## Features
 
 - Physics-inspired 2D semantic simulation
@@ -102,15 +104,6 @@ For more detail, see `docs/semantic_theory.pdf`.
 - Add a web-native visualization with D3 or p5.js
 - Extend the physics model with temperature, friction, and stochastic noise
 
-## Dependencies
-
-- `numpy==2.4.4`
-- `pygame==2.6.1`
-- `scikit-learn==1.8.0`
-- `numba==0.66.0`
-- `matplotlib==3.10.9`
-- `streamlit==1.57.0`
-
 ## Citation
 
 The word vectors used in this project are based on GloVe.
@@ -122,3 +115,4 @@ The word vectors used in this project are based on GloVe.
 - `src/utils/config.py` contains default runtime parameters.
 - `run.py` is the project entry point for both visualization and headless execution.
 - `webui/app.py` contains the browser demo separate from the Pygame application.
+- Please check `requirements.txt` for list of dependencies
