@@ -2,5 +2,5 @@ numpy==2.4.4
 pygame==2.6.1
 scikit-learn==1.8.0
 numba==0.66.0
-matplotlib==3.10.9
+imageio==2.37.4
 streamlit==1.57.0
