@@ -1,10 +1,12 @@
 \documentclass{article}
-\usepackage{graphicx} % Required for inserting images
-\usepackage{amsmath}
 
-\title{Semantic Theory}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\title{Semantic Turing Field: Mathematical Theory}
 \author{Karim El-Sharkawy}
-\date{July 2026}
+\date{August 2026}
 
 \begin{document}
 
@@ -12,105 +14,566 @@
 
 \section{Introduction}
 
-\section{The Force Model}
+The Semantic Turing Field (STF) is a computational model in which words are represented as particles whose interactions are determined by semantic relationships.
 
-The core interaction between two words (or nodes) $i$ and $j$ is
+The central idea is to combine a semantic representation of language with a dynamical system. A pretrained word embedding provides a representation of each word in a high-dimensional semantic space. Pairwise semantic similarity is then used to determine whether particles attract or repel one another. The resulting forces evolve a separate two-dimensional particle field over time.
+
+The model therefore separates two different spaces:
+\begin{enumerate}
+    \item \textbf{Semantic space}, in which word embeddings encode relationships between words.
+    \item \textbf{Simulation space}, in which particles move according to the resulting interaction field.
+\end{enumerate}
+
+The purpose of the simulation is not to reproduce the original embedding geometry exactly. Instead, it provides a dynamic visualization of semantic relationships.
+
+\section{Semantic Representation}
+
+Let the vocabulary contain $N$ words. Each word $i$ is represented by an embedding vector
+
+\[
+\mathbf{v}_i \in \mathbb{R}^{d},
+\]
+
+where $d$ is the embedding dimension.
+
+
+In the current implementation, the embeddings are obtained from GloVe. Semantic similarity between two words is measured using cosine similarity:
+
+\[
+s_{ij}
+=
+\frac{
+\mathbf{v}_i \cdot \mathbf{v}_j
+}{
+\|\mathbf{v}_i\|\,\|\mathbf{v}_j\|
+}.
+\]
+
+The pairwise similarities form a matrix
+
+\[
+S =
+\begin{bmatrix}
+s_{11} & s_{12} & \cdots & s_{1N}\\
+s_{21} & s_{22} & \cdots & s_{2N}\\
+\vdots & \vdots & \ddots & \vdots\\
+s_{N1} & s_{N2} & \cdots & s_{NN}
+\end{bmatrix}.
+\]
+
+This matrix is the primary source of semantic information used by the force model.
+
+\section{Simulation Space}
+
+Each word is associated with a dynamic particle position
+
+\[
+\mathbf{x}_i(t) \in \mathbb{R}^{2}.
+\]
+
+The particle position is not the original GloVe embedding. Instead, the embedding vectors are first reduced to two dimensions to provide an initial representation, after which the simulation evolves the particle positions dynamically.
+
+Each particle also has a velocity
+
+\[
+\mathbf{u}_i(t) \in \mathbb{R}^{2}.
+\]
+
+The state of the field at time $t$ is therefore
+
+\[
+\mathcal{S}(t)
+=
+\left\{
+\mathbf{x}_i(t),
+\mathbf{u}_i(t)
+\right\}_{i=1}^{N}.
+\]
+
+The semantic information remains fixed during a normal simulation, while the particle state evolves over time.
+
+\section{The Pairwise Force Model}
+
+The fundamental interaction between two particles is determined by their semantic similarity.
+
+Define the displacement from particle $i$ toward particle $j$ as
+
+\[
+\mathbf{r}_{ij}
+=
+\mathbf{x}_j-\mathbf{x}_i.
+\]
+
+The STF pairwise force is
+
+\[
+\boxed{
+\mathbf{F}_{ij}
+=
+\alpha
+\left(
+s_{ij}-\beta
+\right)
+\mathbf{r}_{ij}
+}
+\]
+
+where:
+
+\begin{itemize}
+    \item $s_{ij}$ is the semantic similarity between words $i$ and $j$;
+    \item $\alpha > 0$ controls the overall interaction strength;
+    \item $\beta$ is the similarity threshold separating attraction from repulsion;
+    \item $\mathbf{r}_{ij}$ is the spatial direction from $i$ toward $j$.
+\end{itemize}
+
+The total pairwise force acting on particle $i$ is obtained by summing over the other particles:
+
+\[
+\mathbf{F}_i^{\mathrm{semantic}}
+=
+\sum_{j\neq i}
+\mathbf{F}_{ij}.
+\]
+
+\subsection{Attraction and Repulsion}
+
+The sign of
+
+\[
+s_{ij}-\beta
+\]
+
+determines the qualitative interaction. If
+
+\[
+s_{ij}>\beta,
+\]
+
+then
+
+\[
+s_{ij}-\beta>0,
+\]
+
+and the force points toward particle $j$. The interaction is therefore attractive. If
+
+\[
+s_{ij}<\beta,
+\]
+
+then
+
+\[
+s_{ij}-\beta<0,
+\]
+
+and the force reverses direction. The interaction is therefore repulsive.
+
+Thus,
+
+\[
+\begin{array}{c|c}
+\textbf{Condition} & \textbf{Interaction}\\
+\hline
+s_{ij}>\beta & \text{Attraction}\\
+s_{ij}=\beta & \text{No pairwise interaction}\\
+s_{ij}<\beta & \text{Repulsion}
+\end{array}
+\]
+
+The threshold $\beta$ is therefore not merely a scaling parameter. It determines which semantic relationships are treated as cohesive and which are treated as separating.
+
+\subsection{Why Both Attraction and Repulsion Are Needed}
+
+If every interaction were attractive, particles would tend to collapse into a small region of the simulation.
+
+Conversely, if every interaction were repulsive, the particles would tend to separate without forming meaningful structures.
+
+The signed interaction field provides a mechanism for both local cohesion and global separation.
+
+The resulting organization is therefore an emergent property of many simultaneous pairwise interactions rather than an explicit clustering operation.
+
+\section{Relationship to Spring Systems}
+
+The pairwise force is structurally similar to a spring or graph-based force because the interaction acts along the line connecting two particles.
+
+A conventional Hookean spring has the form
+
+\[
+\mathbf{F}
+=
+-k(\mathbf{x}_i-\mathbf{x}_j),
+\]
+
+where the displacement determines the magnitude of the force.
+
+STF instead uses semantic similarity to determine the signed interaction strength:
+
+\[
+\text{spatial displacement}
+\rightarrow
+\text{direction},
+\]
+
+while
+
+\[
+\text{semantic similarity}
+\rightarrow
+\text{interaction strength and sign}.
+\]
+
+The model can therefore be viewed as a semantic analogue of a force-directed system.
+
+The important distinction is that STF does not treat distance itself as the primary source of semantic information. The semantic relationship originates in the embedding space.
+
+\section{Energy Interpretation}
+
+The pairwise interaction admits an energy interpretation.
+
+For a fixed similarity value $s_{ij}$, define the pairwise potential
+
+\[
+E_{ij}
+=
+\frac{\alpha}{2}
+\left(
+s_{ij}-\beta
+\right)
+\|\mathbf{x}_i-\mathbf{x}_j\|^2.
+\]
+
+Taking the negative gradient with respect to $\mathbf{x}_i$ gives
+
+\[
+-\nabla_{\mathbf{x}_i}E_{ij}
+=
+\alpha
+\left(
+s_{ij}-\beta
+\right)
+(\mathbf{x}_j-\mathbf{x}_i),
+\]
+
+which is exactly the STF pairwise force.
+
+Therefore,
 
 \[
 \mathbf{F}_{ij}
 =
--\alpha
-\left(
-\operatorname{cosine\_similarity}(i,j)-\beta
-\right)
-(\mathbf{x}_i-\mathbf{x}_j)
+-\nabla_{\mathbf{x}_i}E_{ij}.
 \]
 
-Where,
+The interpretation depends on the sign of $s_{ij}-\beta$.
 
-\begin{itemize}
-    \item $\operatorname{cosine\_similarity}(i,j)$ measures semantic similarity between two words.
-
-    \item $(\mathbf{x}_i-\mathbf{x}_j)$ is the direction vector between the two particles.
-
-    \item $\alpha$ controls the overall force strength.
-
-    \item $\beta$ is a threshold that determines whether two words attract or repel each other.
-\end{itemize}
-
-\subsection{Where does this come from?}
-
-This equation is inspired by several ideas from physics and machine learning.
-
-\subsubsection{Classical Physics (Hooke / Spring Systems)}
-
-The basic structure
+For
 
 \[
-\mathbf{F}
-\propto
-(\mathbf{x}_i-\mathbf{x}_j)
+s_{ij}>\beta,
 \]
 
-resembles a spring force, where objects pull or push along the line (or edge) connecting them.
+the coefficient of the quadratic potential is positive, so the energy is minimized when the two particles are close.
 
-However, instead of distance determining the force magnitude, semantic similarity determines the interaction strength.
-
-In other words,
+For
 
 \[
-\text{distance}
-\;\longrightarrow\;
-\text{semantic similarity}
+s_{ij}<\beta,
 \]
 
-\subsubsection{Energy-Based Models}
+the coefficient is negative, meaning that increasing separation lowers the pairwise energy. In an unconstrained system this would encourage particles to move arbitrarily far apart.
 
-The system can also be viewed as minimizing an implicit energy function.
+This is one reason the actual simulation requires additional mechanisms such as boundary forces and damping.
 
-\begin{itemize}
-    \item Similar words have lower energy when they are close together.
-    \item Dissimilar words have lower energy when they are farther apart.
-\end{itemize}
+The energy interpretation therefore describes the pairwise semantic interaction rather than claiming that the complete implemented system is pure gradient descent on a single global energy function.
 
-The force is therefore the negative gradient of the energy,
+\section{Discrete-Time Dynamics}
+
+The simulation evolves according to a simple discrete-time integration scheme.
+
+Let the total force on particle $i$ be
 
 \[
-\mathbf{F}
+\mathbf{F}_i(t)
 =
--\nabla E.
+\mathbf{F}_i^{\mathrm{semantic}}
++
+\mathbf{F}_i^{\mathrm{gravity}}
++
+\mathbf{F}_i^{\mathrm{boundary}}.
 \]
 
-Consequently, the simulation naturally evolves toward a semantic equilibrium.
-
-\subsubsection{Signed Interaction Field}
-
-The interaction term
+The velocity is updated according to
 
 \[
-\left(
-\operatorname{similarity}-\beta
-\right)
+\mathbf{u}_i(t+\Delta t)
+=
+\mathbf{u}_i(t)
++
+\mathbf{F}_i(t)\Delta t.
 \]
 
-creates two distinct regimes:
+The position is then updated according to
 
 \[
-\begin{array}{c|c}
-\textbf{Condition} & \textbf{Behavior} \\
-\hline
-\operatorname{similarity}>\beta & \text{Attraction} \\
-\operatorname{similarity}<\beta & \text{Repulsion}
-\end{array}
+\mathbf{x}_i(t+\Delta t)
+=
+\mathbf{x}_i(t)
++
+\mathbf{u}_i(t+\Delta t)\Delta t.
 \]
 
-This balance is essential:
+Damping is applied after the integration step:
+
+\[
+\mathbf{u}_i
+\leftarrow
+\gamma\mathbf{u}_i,
+\]
+
+where $\gamma$ is the damping parameter.
+
+The implementation also limits the maximum particle speed to maintain numerical stability and visual control.
+
+\section{Boundary Forces}
+
+The semantic interaction alone does not constrain the particles to remain within the visible simulation region.
+
+A boundary force is therefore added to the total force:
+
+\[
+\mathbf{F}_i^{\mathrm{boundary}}.
+\]
+
+The complete force becomes
+
+\[
+\mathbf{F}_i
+=
+\mathbf{F}_i^{\mathrm{semantic}}
++
+\mathbf{F}_i^{\mathrm{gravity}}
++
+\mathbf{F}_i^{\mathrm{boundary}}.
+\]
+
+Boundary forces should be interpreted as simulation constraints rather than semantic relationships.
+
+\section{K-Means Clustering}
+
+K-Means is used as a complementary structural analysis of the embedding space.
+
+Given the word embeddings
+
+\[
+\{\mathbf{v}_1,\ldots,\mathbf{v}_N\},
+\]
+
+K-Means partitions them into $K$ clusters.
+
+The objective is to minimize
+
+\[
+\sum_{k=1}^{K}
+\sum_{\mathbf{v}_i\in C_k}
+\|\mathbf{v}_i-\boldsymbol{\mu}_k\|^2,
+\]
+
+where $\boldsymbol{\mu}_k$ is the centroid of cluster $C_k$.
+
+The resulting cluster assignment for word $i$ is denoted by
+
+\[
+c_i \in \{1,\ldots,K\}.
+\]
+
+K-Means does not determine the physical force between particles.
+
+Instead,
+
+\[
+\boxed{
+\text{Cosine similarity}
+\rightarrow
+\text{semantic interaction}
+}
+\]
+
+while
+
+\[
+\boxed{
+\text{K-Means}
+\rightarrow
+\text{cluster assignment and visualization}
+}
+\]
+
+This distinction is important because a pair of words can belong to the same K-Means cluster without necessarily having a strong direct interaction under the STF force model.
+
+K-Means therefore provides a coarse semantic grouping, while the force field represents continuous pairwise relationships.
+
+\section{Gravity Wave}
+
+The gravity wave introduces an external semantic perturbation into the field.
+
+Suppose a user enters a sentence $q$.
+
+After preprocessing, the sentence is represented by an embedding
+
+\[
+\mathbf{q}
+=
+\frac{1}{|V_q|}
+\sum_{w\in V_q}
+\mathbf{v}_w,
+\]
+
+where $V_q$ is the set of valid vocabulary words appearing in the sentence.
+
+For every vocabulary word $i$, compute
+
+\[
+s_{iq}
+=
+\operatorname{cosine\_similarity}
+(\mathbf{v}_i,\mathbf{q}).
+\]
+
+The gravity-wave force is then activated for sufficiently relevant words.
+
+A simplified representation is
+
+\[
+\mathbf{F}_i^{\mathrm{gravity}}
+=
+-\lambda
+\max(s_{iq}-\tau,0)
+\mathbf{x}_i,
+\]
+
+where:
 
 \begin{itemize}
-    \item Without repulsion, every particle collapses into a single point.
-    \item Without attraction, particles simply drift apart.
+    \item $\lambda$ controls the strength of the external influence;
+    \item $\tau$ is the relevance threshold;
+    \item $s_{iq}$ measures similarity between word $i$ and the input sentence.
 \end{itemize}
 
-The threshold parameter $\beta$ therefore creates a balanced, self-organizing semantic field.
+Because the force points toward the origin, words semantically related to the input sentence are drawn toward the center of the field.
+
+The gravity wave therefore acts as a semantic query mechanism:
+
+\[
+\text{Sentence}
+\rightarrow
+\text{Sentence embedding}
+\rightarrow
+\text{Word--sentence similarity}
+\rightarrow
+\text{External force}
+\rightarrow
+\text{Field response}.
+\]
+
+Unlike the pairwise semantic interaction, the gravity wave is externally triggered and temporary.
+
+\section{Emergent Structure}
+
+No explicit rule instructs the simulation to form semantic communities.
+
+Instead, structure emerges from the interaction of many particles.
+
+The process can be summarized as
+
+\[
+\text{Embeddings}
+\rightarrow
+\text{Similarity matrix}
+\rightarrow
+\text{Signed interactions}
+\rightarrow
+\text{Particle dynamics}
+\rightarrow
+\text{Emergent spatial organization}.
+\]
+
+Semantically related words tend to experience attractive interactions when their similarity exceeds the threshold. Less-related words experience repulsive interactions.
+
+The resulting spatial organization is therefore a dynamical representation of the semantic relationships encoded by the embedding model.
+
+\section{What STF Represents}
+
+STF should be interpreted as a \emph{semantic dynamical visualization}, rather than as a replacement for the original embedding model.
+
+The embedding model provides the semantic information.
+
+The STF force model transforms that information into interactions.
+
+The simulation integrates those interactions over time.
+
+K-Means provides a coarse structural grouping for visual interpretation.
+
+The renderer exposes the resulting system to the user.
+
+Thus the complete conceptual pipeline is
+
+\[
+\boxed{
+\text{Language}
+\rightarrow
+\text{Embedding}
+\rightarrow
+\text{Similarity}
+\rightarrow
+\text{Force Field}
+\rightarrow
+\text{Dynamics}
+\rightarrow
+\text{Visualization}
+}
+\]
+
+with K-Means providing an additional clustering layer and the gravity wave providing an interactive semantic perturbation.
+
+\section{Limitations of the Current Model}
+
+The current STF formulation is intentionally simple.
+
+Several limitations should be recognized.
+
+First, the semantic representation depends entirely on the pretrained embedding model. Any biases or limitations in the embeddings are inherited by the field.
+
+Second, the two-dimensional simulation space is not itself a faithful representation of the original high-dimensional semantic space. It is a dynamic visualization space.
+
+Third, the threshold $\beta$ is a manually selected model parameter. Different values can produce substantially different field structures.
+
+Fourth, the current force model does not explicitly include mass, realistic physical units, or a physically derived potential governing every component of the system.
+
+Finally, K-Means provides a useful visualization aid but should not be interpreted as ground-truth semantic categories.
+
+These limitations are intentional in the current version: STF is primarily a computational framework for exploring how semantic relationships can be represented dynamically.
+
+\section{Future Extensions}
+
+The current formulation provides a foundation for more sophisticated experiments.
+
+Potential extensions include:
+
+\begin{itemize}
+    \item alternative embedding models;
+    \item alternative clustering algorithms;
+    \item normalized or distance-dependent force magnitudes;
+    \item additional force components;
+    \item spatial partitioning for larger vocabularies;
+    \item quantitative measures of field stability;
+    \item experiments over $\alpha$, $\beta$, $dt$, and damping;
+    \item more principled energy formulations;
+    \item interactive semantic queries;
+    \item reproducible simulation and animation generation.
+\end{itemize}
+
+The architecture is intentionally modular so that these extensions can be introduced without replacing the entire system.
 
 \end{document}
