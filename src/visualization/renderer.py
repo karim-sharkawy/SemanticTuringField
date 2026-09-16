@@ -74,15 +74,19 @@ class Renderer:
         words: list[str],
         simulation: Any,
         paused: bool,
-        input_handler: Any,
+        input_handler: Any = None,
+        show_ui: bool = True,
     ) -> None:
-
         self.screen.fill(self.background)
 
-        # Determine which particles belong
-        # to the current sentence.
+        # Determine which particles belong to the current sentence.
+        if input_handler is not None:
+            sentence = input_handler.current_sentence
+        else:
+            sentence = None
+
         sentence_indices = self.get_sentence_indices(
-            input_handler.current_sentence,
+            sentence,
             words,
         )
 
@@ -99,15 +103,16 @@ class Renderer:
             words,
         )
 
-        self.draw_ui(
-            simulation,
-            paused,
-        )
+        if show_ui:
+            self.draw_ui(
+                simulation,
+                paused,
+            )
 
-        self.draw_sentence_box(input_handler)
+            if input_handler is not None:
+                self.draw_sentence_box(input_handler)
 
         pygame.display.flip()
-
         self.clock.tick(60)
 
     # Sentence highlighting

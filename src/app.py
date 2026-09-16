@@ -60,6 +60,7 @@ def parse_args(argv: list[str] | None = None) -> Namespace:
 
 def build_simulation(
     max_words: int = MAX_WORDS,
+    dt: float = DT,
 ) -> Tuple[STFSimulation, Dict[str, np.ndarray], list[str], np.ndarray, np.ndarray, list[str]]:
     """
     Load embeddings and initialize the STF simulation.
@@ -104,7 +105,7 @@ def build_simulation(
         similarity_matrix,
         alpha=ALPHA,
         beta=BETA,
-        dt=DT,
+        dt=dt,
         damping=DAMPING,
     )
 
