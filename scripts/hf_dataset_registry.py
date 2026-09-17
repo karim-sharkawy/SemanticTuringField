@@ -14,10 +14,10 @@ DATA_DIR = Path("data")
 
 FIELD_SIZES = {
     "500 words": 500,
-    "1,000 words": 1000,
-    "2,500 words": 2500,
-    "5,000 words": 5000,
-    "Full vocabulary": None,
+    #"1,000 words": 1000,
+    #"2,500 words": 2500,
+    #"5,000 words": 5000,
+    #"Full vocabulary": None,
 }
 
 
@@ -73,10 +73,10 @@ def upload_raw_glove_files() -> None:
     # okay to keep hardcoded for now, but will change later
     files = {
         "glove.2024.wikigiga.50d_500.txt": "raw/glove.2024.wikigiga.50d_500.txt",
-        "glove.2024.wikigiga.50d_1000.txt": "raw/glove.2024.wikigiga.50d_1000.txt",
-        "glove.2024.wikigiga.50d_2500.txt": "raw/glove.2024.wikigiga.50d_2500.txt",
-        "glove.2024.wikigiga.50d_5000.txt": "raw/glove.2024.wikigiga.50d_5000.txt",
-        "glove.2024.wikigiga.50d_full.txt": "raw/glove.2024.wikigiga.50d_full.txt",
+        #"glove.2024.wikigiga.50d_1000.txt": "raw/glove.2024.wikigiga.50d_1000.txt",
+        #"glove.2024.wikigiga.50d_2500.txt": "raw/glove.2024.wikigiga.50d_2500.txt",
+        #"glove.2024.wikigiga.50d_5000.txt": "raw/glove.2024.wikigiga.50d_5000.txt",
+        #"glove.2024.wikigiga.50d_full.txt": "raw/glove.2024.wikigiga.50d_full.txt",
     }
 
     for filename, repo_path in files.items():
