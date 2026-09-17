@@ -59,7 +59,7 @@ GRAVITY_FRAMES = 75
 # Number of frames after the gravity wave finishes.
 OUTRO_FRAMES = 40
 
-OUTPUT_PATH = PROJECT_ROOT / "assets" / "gifs" / "stf_demo.gif"
+OUTPUT_PATH = PROJECT_ROOT / "assets" / "stf_demo.gif"
 
 SENTENCE = "The government and local communities should invest in renewable energy and adaptation strategies to address climate change."
 

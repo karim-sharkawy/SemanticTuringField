@@ -50,7 +50,7 @@ RESPONSE_STEPS = 120
 
 OUTRO_FRAMES = 15
 
-OUTPUT_PATH = PROJECT_ROOT / "assets" / "gifs" / "dt_comparison.gif"
+OUTPUT_PATH = PROJECT_ROOT / "assets" / "dt_comparison.gif"
 
 
 # Compare these numerical timesteps.

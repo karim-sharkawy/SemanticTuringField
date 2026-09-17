@@ -57,7 +57,7 @@ RESPONSE_STEPS = 150
 # Frames showing the final state of each response.
 OUTRO_FRAMES = 15
 
-OUTPUT_PATH = PROJECT_ROOT / "assets" / "gifs" / "sentence_response.gif"
+OUTPUT_PATH = PROJECT_ROOT / "assets" / "sentence_response.gif"
 
 
 SENTENCES = [
