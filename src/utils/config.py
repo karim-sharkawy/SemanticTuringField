@@ -1,3 +1,4 @@
+# should break this up into two config files
 from pathlib import Path
 
 MAX_WORDS: int = 500
