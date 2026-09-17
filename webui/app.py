@@ -374,11 +374,7 @@ def main():
         if st.session_state.running:
             update_simulation()
 
-        surface = render_field()
-
-        # Convert Pygame surface to a format Streamlit can display.
-        image = pygame.surfarray.array3d(surface)
-        image = image.swapaxes(0, 1)
+        image = render_field()
 
         st.image(
             image,
