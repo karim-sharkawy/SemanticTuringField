@@ -1,0 +1,43 @@
+name: Build and Push LaTeX PDF
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.tex'
+      - '.github/workflows/latex.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: docs/semantic_theory.tex
+
+      - name: Move PDF to docs folder
+        run: |
+          mv semantic_theory.pdf docs/semantic_theory.pdf
+
+      - name: Commit and push PDF
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add docs/semantic_theory.pdf
+
+          if git diff --cached --quiet; then
+            echo "PDF has not changed."
+          else
+            git commit -m "Update generated PDF [skip ci]"
+            git push
+          fi
