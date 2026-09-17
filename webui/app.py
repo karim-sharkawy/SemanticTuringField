@@ -16,9 +16,9 @@ sys.path.insert(0, str(ROOT))
 os.chdir(ROOT)
 
 from src.app import build_simulation
-from src.visualization.renderer import Renderer
-from src.visualization.camera import Camera
 from src.nlp.text_preprocessing import tokenize
+from src.visualization.camera import Camera
+from src.visualization.renderer import Renderer
 
 # ---------------------------------------------------------------------
 # Configuration
@@ -283,7 +283,7 @@ def main():
 
     st.markdown(
         """
-        **A universe of words that evolves toward meaning.**
+        A universe of words that evolves toward meaning.
 
         Explore how word embeddings interact as a dynamic semantic field,
         then disturb the field with a sentence and watch it evolve.
@@ -302,9 +302,7 @@ def main():
         selected_field = st.radio(
             "Vocabulary size",
             options=list(FIELD_SIZES.keys()),
-            index=list(FIELD_SIZES.keys()).index(
-                st.session_state.field_size
-            ),
+            index=list(FIELD_SIZES.keys()).index(st.session_state.field_size),
         )
 
         if selected_field != st.session_state.field_size:
@@ -413,7 +411,7 @@ def main():
 
         st.divider()
 
-        st.caption(f"Field: **{st.session_state.field_size}**")
+        st.caption(f"Field: {st.session_state.field_size}")
 
         st.caption(
             "The field evolves according to semantic "
@@ -457,7 +455,7 @@ def main():
     if st.session_state.current_sentence:
         vocabulary_words = get_sentence_words(st.session_state.current_sentence)
 
-        st.markdown(f"**Current sentence:** {st.session_state.current_sentence}")
+        st.markdown(f"Current sentence: {st.session_state.current_sentence}")
 
         if vocabulary_words:
             st.caption(
@@ -486,7 +484,7 @@ def main():
 
             A sentence can be introduced as a temporary disturbance.
             Its embedding interacts with the field and creates a
-            **semantic gravity wave** that changes the motion of
+            semantic gravity wave that changes the motion of
             nearby words.
             """
         )

@@ -47,6 +47,7 @@ def load_embeddings(path: str, max_words: int = MAX_WORDS) -> Dict[str, np.ndarr
     return embeddings
 
 
+# Removing stopwords from the data copies
 def filter_embeddings(embeddings):
     return {word: vector for word, vector in embeddings.items() if word not in ENGLISH_STOP_WORDS}
 

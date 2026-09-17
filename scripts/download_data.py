@@ -1,17 +1,13 @@
-import os
 import urllib.request
 import zipfile
-from pathlib import Path
 from functools import lru_cache
+from pathlib import Path
 
-
-GLOVE_URL = (
-    "https://nlp.stanford.edu/data/wordvecs/"
-    "glove.2024.wikigiga.50d.zip"
-)
+GLOVE_URL = "https://nlp.stanford.edu/data/wordvecs/glove.2024.wikigiga.50d.zip"
 
 DATA_DIR = Path("data")
 ZIP_PATH = DATA_DIR / "glove.2024.wikigiga.50d.zip"
+
 
 # Download the GloVe archive once and return its local path
 @lru_cache(maxsize=1)
@@ -58,35 +54,20 @@ def extract_portion(
     if lines_to_keep is None:
         print(f"Extracting full GloVe file to {output_file}...")
     else:
-        print(
-            f"Extracting {lines_to_keep:,} lines "
-            f"to {output_file}..."
-        )
+        print(f"Extracting {lines_to_keep:,} lines to {output_file}...")
 
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
-
-        txt_files = [
-            name
-            for name in zip_ref.namelist()
-            if name.endswith(".txt")
-        ]
+        txt_files = [name for name in zip_ref.namelist() if name.endswith(".txt")]
 
         if not txt_files:
-            raise FileNotFoundError(
-                "No .txt file found inside the GloVe archive."
-            )
+            raise FileNotFoundError("No .txt file found inside the GloVe archive.")
 
         txt_file_name = txt_files[0]
 
         with zip_ref.open(txt_file_name) as infile:
             with open(output_file, "wb") as outfile:
-
                 for i, line in enumerate(infile):
-
-                    if (
-                        lines_to_keep is not None
-                        and i >= lines_to_keep
-                    ):
+                    if lines_to_keep is not None and i >= lines_to_keep:
                         break
 
                     outfile.write(line)
@@ -113,7 +94,6 @@ def extract_all_sizes():
     }
 
     for name, size in sizes.items():
-
         output_file = DATA_DIR / f"{name}.txt"
 
         if output_file.exists():
