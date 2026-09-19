@@ -2,15 +2,15 @@
 
 # Semantic Turing Field Architecture
 
-## 1. Overview
+# 1. Overview
 
 The Semantic Turing Field (STF) is a semantic particle simulation in which words are represented as particles in a two-dimensional space and their interactions are determined by relationships between their semantic embeddings.
 
 The system combines three primary components:
 
-1. **Natural language processing** to obtain semantic representations of words.
-2. **A force-based simulation engine** to evolve the positions of word particles.
-3. **A Pygame visualization layer** to render and interact with the resulting field.
+1. Natural language processing to obtain semantic representations of words.
+2. A force-based simulation engine to evolve the positions of word particles.
+3. A Pygame visualization layer to render and interact with the resulting field.
 
 The architecture separates these responsibilities so that the semantic model, simulation engine, and visualization can be developed independently.
 
@@ -55,14 +55,17 @@ At a high level:
 
 The application entry point connects these layers but does not contain the underlying semantic or physical logic itself.
 
----
 
-## 2. Repository Structure
 
-The project is organized around three conceptual layers:
+# 2. Repository Structure
 
-```text
+The project is organized around three conceptual layers, with additional
+modules supporting offline precomputation, data distribution, and the web
+application:
+
+```
 src/
+
 ├── core/
 │   ├── simulate_engine.py
 │   ├── forces.py
@@ -81,47 +84,81 @@ src/
 │   ├── input_handler.py
 │   └── colors.py
 │
+├── data/
+│   └── hf_dataset_registry.py
+│
 └── utils/
     ├── config.py
     └── save_state.py
 
+scripts/
+└── precompute_fields.py
+
+webui/
+└── app.py
+
+data/
+├── raw GloVe data
+└── precomputed/
+    ├── 500/
+    ├── 1000/
+    ├── 2500/
+    ├── 5000/
+    └── full/
+
 app.py
 ```
 
-The exact contents of individual directories may grow over time, but the responsibility of each layer should remain stable.
+The `src/data/` layer provides access to precomputed STF configurations
+stored in the Hugging Face Dataset repository.
 
----
+The `scripts/` directory contains offline workflows used to generate those
+configurations.
 
-## 3. Application Layer
+The `webui/` directory contains the Streamlit application, which loads
+precomputed configurations rather than constructing the semantic field
+from the original GloVe data at runtime.
 
-### `app.py`
+The local `data/precomputed/` directory is therefore an offline build
+artifact rather than a runtime dependency of the deployed web application.
 
-`app.py` is the application entry point and orchestrator.
+The responsibility of each layer remains separated even though the project
+supports multiple execution paths.
+
+
+
+# 3. Application Layer
+
+The project has two primary application paths:
+
+1. Pygame application — used for local experimentation and interactive
+   simulation.
+2. Streamlit web application — used to present the precomputed semantic
+   fields through a browser-based interface.
+
+## 3.1 `app.py`
+
+`app.py` is the main local Pygame application entry point and orchestrator.
 
 It is responsible for:
 
-* parsing command-line arguments;
-* loading or generating embeddings;
-* preparing semantic vectors;
-* constructing the cosine-similarity matrix;
-* performing K-Means clustering;
-* creating the `STFSimulation`;
+* loading or generating the semantic field for local execution;
+* preparing the NLP components required by the simulation;
+* constructing the `STFSimulation`;
 * creating the visualization components;
 * running the main Pygame event loop;
 * passing user input into the simulation.
 
-It should coordinate components rather than implement their internal algorithms.
+It coordinates components rather than implementing their underlying
+algorithms.
 
-The main initialization pipeline is:
+For local execution, the initialization pipeline is:
 
-```text
+```
 Load embeddings
       │
       ▼
-Convert embeddings to vectors
-      │
-      ▼
-Reduce vectors to 2D
+Prepare semantic vectors
       │
       ├───────────────┐
       ▼               ▼
@@ -135,13 +172,221 @@ STFSimulation      Cluster labels
         Visualization
 ```
 
----
+## 3.2 `webui/app.py`
 
-# 4. NLP Layer
+`webui/app.py` is the browser-based Streamlit application.
 
-The NLP layer converts language into numerical representations that the simulation can use.
+Unlike the local Pygame application, the web application does not construct
+the semantic field from the original GloVe embeddings.
 
-## 4.1 Embeddings
+Instead, it loads one of the precomputed STF configurations from the
+Hugging Face Dataset repository.
+
+The runtime pipeline is:
+
+```
+User selects field size
+        │
+        ▼
+Hugging Face Dataset
+        │
+        ▼
+Precomputed STF artifacts
+        │
+        ▼
+Reconstruct simulation state
+        │
+        ▼
+Streamlit + Pygame Renderer
+        │
+        ▼
+Interactive semantic field
+```
+
+The supported configurations are:
+```
+500 words
+1,000 words
+2,500 words
+5,000 words
+Full vocabulary
+```
+
+The web application still performs simulation steps at runtime.
+
+In particular, sentence input is processed dynamically so that a sentence
+can produce a semantic gravity-wave disturbance in the currently loaded
+field.
+
+The expensive field-construction operations are therefore performed
+offline, while the interactive simulation remains dynamic.
+
+
+
+# 4. Offline Precomputation and Data Distribution
+
+STF separates expensive semantic-field construction from runtime
+visualization.
+
+The semantic field configurations used by the web application are
+generated offline by:
+
+### `scripts/precompute_fields.py`
+
+The precomputation pipeline performs:
+
+```
+GloVe embeddings
+       │
+       ▼
+Vocabulary filtering
+       │
+       ▼
+Embedding matrix
+       │
+       ▼
+Semantic vectors
+       │
+       ├──────────────────┐
+       ▼                  ▼
+Similarity matrix       K-Means
+       │                  │
+       └────────┬─────────┘
+                ▼
+       Initial particle state
+                │
+                ▼
+        Precomputed artifacts
+```
+
+The same five configurations are used. 
+
+Each configuration contains the information required to reconstruct the
+corresponding STF field without repeating the expensive preprocessing
+steps.
+
+Typical artifacts include:
+```
+embeddings.npy
+vecs.npy
+similarity.npy
+clusters.npy
+positions.npy
+velocities.npy
+words.json
+labels.json
+metadata.json
+```
+
+These artifacts contain both static semantic information and the initial
+dynamic particle state.
+
+## 4.1 Hugging Face Dataset
+
+The precomputed configurations are distributed through a Hugging Face
+Dataset repository.
+
+The repository is organized by field size:
+
+```
+fields/
+├── 500/
+├── 1000/
+├── 2500/
+├── 5000/
+└── full/
+```
+
+Each directory contains the artifacts for that field configuration.
+
+The Hugging Face repository acts as the runtime data source for the
+Streamlit application.
+
+This avoids requiring the deployed application to:
+
+* download and parse the original GloVe archive;
+* construct the embedding matrix;
+* compute the pairwise similarity matrix;
+* perform K-Means clustering;
+* generate the initial particle state.
+
+These operations are performed once during the offline precomputation
+stage.
+
+## 4.2 `hf_dataset_registry.py`
+
+`src/data/hf_dataset_registry.py` provides the interface between STF and
+the Hugging Face Dataset repository.
+
+Its responsibilities include:
+
+* defining the supported field configurations;
+* downloading precomputed artifacts;
+* loading NumPy and JSON data;
+* reconstructing the embedding dictionary;
+* reconstructing the `STFSimulation`;
+* restoring the precomputed initial particle state;
+* uploading locally generated configurations to Hugging Face.
+
+The registry therefore separates data distribution from the Streamlit
+application itself.
+
+## 4.3 Runtime Caching
+
+The Streamlit application caches loaded field configurations.
+
+When a field is requested for the first time, its artifacts are retrieved
+from Hugging Face and loaded into memory.
+
+Subsequent Streamlit reruns can reuse the cached configuration rather than
+reconstructing or repeatedly downloading the field.
+
+The architecture is therefore:
+
+```
+                 OFFLINE
+                    │
+                    ▼
+              GloVe dataset
+                    │
+                    ▼
+          Precompute STF fields
+                    │
+                    ▼
+             Hugging Face
+                    │
+                    │
+                    ▼
+                 RUNTIME
+                    │
+                    ▼
+          Streamlit application
+                    │
+                    ▼
+        Cached precomputed field
+                    │
+                    ▼
+        Dynamic STF simulation
+                    │
+                    ▼
+             Visualization
+```
+
+This separation allows the web application to remain lightweight while
+preserving the dynamic behavior of the simulation.
+
+# 5. NLP Layer
+
+The NLP layer is responsible for converting the original GloVe vocabulary
+into the semantic representations required by STF.
+
+During offline precomputation, these components are used to construct the
+semantic information stored in the Hugging Face Dataset repository.
+
+The Streamlit application generally consumes the resulting precomputed
+artifacts rather than repeating these operations at runtime.
+
+## 5.1 Embeddings
 
 ### `embeddings.py`
 
@@ -164,9 +409,9 @@ These vectors represent semantic information learned from large-scale text.
 
 The simulation does not directly operate on the original high-dimensional embedding vectors as spatial coordinates.
 
----
 
-## 4.2 Semantic Processing
+
+## 5.2 Semantic Processing
 
 ### `semantics.py`
 
@@ -191,9 +436,9 @@ where \(\mathbf{v}_i\) and \(\mathbf{v}_j\) are embedding vectors.
 
 The resulting matrix provides the semantic information required by the force model.
 
----
 
-## 4.3 Text Preprocessing
+
+## 5.3 Text Preprocessing
 
 ### `text_preprocessing.py`
 
@@ -230,9 +475,9 @@ The sentence embedding is computed as the mean of the available word embeddings.
 
 If no valid vocabulary words remain, no gravity-wave force is applied.
 
----
 
-## 4.4 K-Means Clustering
+
+## 5.4 K-Means Clustering
 
 ### `clustering.py`
 
@@ -255,23 +500,23 @@ Cluster assignments
 Particle colors
 ```
 
-Importantly, K-Means does **not** determine the pairwise force between particles.
+Importantly, K-Means does not determine the pairwise force between particles.
 
 The force model continues to use cosine similarity.
 
 Therefore:
 
-> **Cosine similarity determines interaction; K-Means determines visual grouping.**
+> Cosine similarity determines interaction; K-Means determines visual grouping.
 
 This distinction is important to the conceptual architecture of STF.
 
----
 
-# 5. Core Simulation Layer
+
+# 6. Core Simulation Layer
 
 The core layer contains the actual dynamical system.
 
-## 5.1 `simulate_engine.py`
+## 6.1 `simulate_engine.py`
 
 `STFSimulation` owns the state of the particle field.
 
@@ -320,9 +565,9 @@ New particle state
 
 The simulation engine does not render particles and does not process keyboard or mouse input.
 
----
 
-## 5.2 Pairwise Forces
+
+## 6.2 Pairwise Forces
 
 ### `forces.py`
 
@@ -341,9 +586,9 @@ The simulation therefore does not simply pull all semantically related words tog
 
 Instead, similarity creates a signed interaction field that allows both cohesion and separation.
 
----
 
-## 5.3 Gravity Wave
+
+## 6.3 Gravity Wave
 
 ### `gravity_wave.py`
 
@@ -376,9 +621,9 @@ The gravity wave therefore provides a mechanism for querying the semantic field 
 
 It does not modify the underlying word embeddings or the K-Means assignments.
 
----
 
-## 5.4 Boundary Forces
+
+## 6.4 Boundary Forces
 
 ### `boundaries.py`
 
@@ -386,13 +631,13 @@ Boundary forces keep particles within a useful simulation region.
 
 They are separate from semantic forces because the boundaries are a visualization/simulation constraint rather than a semantic relationship.
 
----
 
-# 6. Visualization Layer
+
+# 7. Visualization Layer
 
 The visualization layer translates simulation state into an interactive graphical representation.
 
-## 6.1 Renderer
+## 7.1 Renderer
 
 ### `renderer.py`
 
@@ -408,9 +653,9 @@ The renderer is responsible for:
 
 The renderer reads simulation state but should not modify the semantic model.
 
----
 
-## 6.2 Camera
+
+## 7.2 Camera
 
 ### `camera.py`
 
@@ -424,9 +669,9 @@ It handles:
 
 The camera therefore allows the simulation coordinate system to remain independent of the physical pixel dimensions of the Pygame window.
 
----
 
-## 6.3 Input Handler
+
+## 7.3 Input Handler
 
 ### `input_handler.py`
 
@@ -447,9 +692,9 @@ Current interactions include:
 
 The input handler communicates with the simulation and camera but does not implement their underlying algorithms.
 
----
 
-# 7. Simulation State
+
+# 8. Simulation State
 
 The simulation state is intentionally separate from the visualization.
 
@@ -489,9 +734,9 @@ where:
 
 This distinction is useful because the embeddings and clusters remain fixed during normal simulation, while particle positions and velocities evolve over time.
 
----
 
-# 8. Coordinate Systems
+
+# 9. Coordinate Systems
 
 STF uses two different geometric representations.
 
@@ -523,64 +768,177 @@ This distinction is fundamental:
 
 > The embedding space describes semantic relationships; the simulation space describes the evolving field.
 
----
 
-# 9. Parameter Flow
 
-The primary parameters are centralized in `config.py`.
+# 10. Parameter Flow
+
+The primary simulation parameters are centralized in `config.py`.
 
 Current defaults include:
 
-| Parameter      | Meaning                                |
-| -------------- | -------------------------------------- |
-| `MAX_WORDS`    | Number of vocabulary embeddings loaded |
-| `ALPHA`        | Pairwise interaction strength          |
-| `BETA`         | Attraction/repulsion threshold         |
-| `DT`           | Simulation timestep                    |
-| `DAMPING`      | Velocity damping                       |
-| `NUM_CLUSTERS` | Number of K-Means clusters             |
-| `NUM_STEPS`    | Default headless simulation steps      |
+| Parameter       | Meaning                               |
+|  | - |
+| `MAX_WORDS`     | Number of vocabulary embeddings loaded |
+| `ALPHA`         | Pairwise interaction strength          |
+| `BETA`          | Attraction/repulsion threshold         |
+| `DT`            | Simulation timestep                    |
+| `DAMPING`       | Velocity damping                       |
+| `NUM_CLUSTERS`  | Number of K-Means clusters             |
+| `NUM_STEPS`     | Default headless simulation steps      |
 
-The interactive controls expose several of these parameters during runtime.
+For the local Pygame application, several simulation parameters can be
+modified interactively through the input handler.
 
-This makes the simulation useful not only as a visualization but also as an experimental environment for studying how the field responds to different parameter regimes.
+The Streamlit web application intentionally exposes a smaller interface.
+Users select one of five precomputed vocabulary configurations rather than
+directly modifying the underlying physics parameters.
 
----
+The web application's field choices are:
 
-# 10. State Persistence
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+THE SAME AS ALWAYS
+
+The corresponding simulation parameters are fixed during precomputation and
+stored as part of the field configuration.
+
+This creates two distinct use cases:
+
+```
+Local experimentation
+        │
+        ├── adjustable simulation parameters
+        └── experimental control
+
+Web application
+        │
+        ├── fixed precomputed configurations
+        └── simplified user interaction
+```
+
+This separation keeps the web interface focused on exploring the semantic
+field rather than exposing implementation-level simulation controls.
+
+
+
+
+
+# 11. State Persistence
 
 ### `save_state.py`
 
-Simulation state can be saved and restored.
+Simulation state can be saved and restored for local experimentation.
 
-The persistence layer allows the current simulation and camera state to be stored and later reloaded.
+The persistence layer allows the current simulation and camera state to be
+stored and later reloaded.
 
-This is intentionally separated from the simulation engine so that serialization does not become part of the physics implementation.
+This is intentionally separated from the simulation engine so that
+serialization does not become part of the physics implementation.
 
----
+The precomputed field artifacts used by the web application are a separate
+form of persistence.
 
-# 11. Dependency Direction
+They represent a canonical initial configuration of an STF field, including
+its semantic information and initial particle state.
+
+Therefore:
+
+```
+save_state.py
+     │
+     └── local experiment/session state
+
+Hugging Face Dataset
+     │
+     └── distributable precomputed field configurations
+```
+
+The Hugging Face configurations are not intended to capture a user's
+individual simulation session. They provide deterministic starting states
+from which the web application can run the simulation.
+
+
+
+# 12. Dependency Direction
 
 The intended dependency direction is:
 
-```text
-Application
-    │
-    ├── NLP
-    │
-    ├── Core
-    │
-    └── Visualization
+```
+                    Application
+                   /     |      \
+                  /      |       \
+                 ▼       ▼        ▼
+               NLP     Core   Visualization
+                 │       ▲
+                 │       │
+                 └───────┘
 
-Core
-    │
-    ├── semantic information
-    └── force components
+          Offline Precomputation
+                   │
+                   ▼
+                 NLP
+                   │
+                   ▼
+                 Core
+                   │
+                   ▼
+          Precomputed artifacts
+                   │
+                   ▼
+            Hugging Face Dataset
+                   │
+                   ▼
+             Streamlit Web UI
+```
 
-Visualization
-    │
-    ├── reads simulation state
-    └── handles user interaction
+More specifically,
+
+```
+NLP
+ │
+ ├── embeddings
+ ├── semantic processing
+ ├── preprocessing
+ └── clustering
+          │
+          ▼
+   Precomputation pipeline
+          │
+          ▼
+   Precomputed field data
+          │
+          ▼
+   Hugging Face Dataset
+          │
+          ▼
+   Web application
+          │
+          ▼
+   Core + Visualization
 ```
 
 The core simulation should not depend on Pygame rendering.
@@ -589,17 +947,26 @@ The NLP layer should not depend on Pygame.
 
 The renderer should not calculate semantic similarity or physical forces.
 
-This separation allows the simulation to eventually be run without a graphical interface, which is already supported through the headless execution path.
+The Hugging Face data layer should provide data to the application without
+embedding web-specific logic into the core simulation.
 
----
+The Streamlit application is therefore an orchestration layer that connects
+distributed precomputed data with the existing simulation and visualization
+components.
 
-# 12. Headless Execution
+This separation allows the simulation to continue running independently of
+the graphical interface and allows the same precomputed semantic fields to
+be consumed by different applications in the future.
 
-The application can run without Pygame visualization.
 
-In headless mode:
 
-```text
+# 13. Headless Execution
+
+The simulation can run without Pygame visualization.
+
+For local or offline execution, the pipeline is:
+
+```
 Load embeddings
       │
       ▼
@@ -615,18 +982,41 @@ Run N simulation steps
 Report simulation statistics
 ```
 
-This provides a foundation for:
+Headless execution provides a foundation for:
 
 * parameter experiments;
 * benchmarking;
 * automated tests;
 * reproducibility;
-* future GIF generation;
-* future quantitative analysis.
+* GIF generation;
+* quantitative analysis;
+* offline precomputation.
 
----
+The web application represents a separate runtime path in which the
+semantic field has already been precomputed:
 
-# 13. Visualization and Export
+```
+Load precomputed field
+        │
+        ▼
+Create simulation
+        │
+        ▼
+Run dynamic simulation steps
+        │
+        ▼
+Optional sentence gravity wave
+        │
+        ▼
+Report or visualize state
+```
+
+This distinction prevents expensive semantic preprocessing from being
+repeated during normal web application startup.
+
+
+
+# 14. Visualization and Export
 
 The simulation state is independent of how it is displayed.
 
@@ -645,41 +1035,59 @@ For example, a GIF can be generated by repeatedly advancing the simulation, rend
 
 This should remain an output concern rather than becoming part of the core simulation engine.
 
----
 
-# 14. Design Principles
+
+# 15. Design Principles
 
 The architecture follows several principles:
 
 ### Separation of concerns
 
-Semantic processing, simulation, visualization, and persistence have separate responsibilities.
+Semantic processing, simulation, visualization, persistence, and data
+distribution have separate responsibilities.
+
+### Offline computation
+
+Expensive semantic-field construction is performed offline rather than
+during web application startup.
 
 ### Reproducibility
 
-Core simulation logic can run without the graphical interface.
+Precomputed field configurations use fixed configurations and initial states
+so that the web application can consistently reconstruct the same starting
+field.
 
 ### Replaceability
 
-The embedding model, clustering method, force components, and renderer can theoretically be replaced independently.
+The embedding model, clustering method, force components, renderer, and data
+distribution mechanism can theoretically be replaced independently.
 
 ### Extensibility
 
-New forces should be implemented as independent force components and combined by the simulation engine.
+New forces should be implemented as independent force components and
+combined by the simulation engine.
 
 ### Interpretability
 
-The relationship between semantic similarity, particle interaction, and visual clustering should remain explicit.
+The relationship between semantic similarity, particle interaction, and
+visual clustering should remain explicit.
+
+### Runtime simplicity
+
+The web application should consume precomputed semantic information rather
+than reproduce the entire NLP preprocessing pipeline.
 
 ### Experimental control
 
-Important simulation parameters are exposed through configuration and interactive controls.
+The local application retains adjustable simulation parameters for
+experimentation, while the web application presents a controlled set of
+precomputed field configurations.
 
----
 
-# 15. Conceptual Summary
 
-The Semantic Turing Field can therefore be understood as a pipeline:
+# 16. Conceptual Summary
+
+The offline construction of the Semantic Turing Field can be understood as:
 
 $$
 \text{Language}
@@ -687,6 +1095,14 @@ $$
 \text{Embeddings}
 \rightarrow
 \text{Semantic Relationships}
+\rightarrow
+\text{Precomputed Field}
+$$
+
+The runtime simulation then evolves that field:
+
+$$
+\text{Precomputed Field}
 \rightarrow
 \text{Forces}
 \rightarrow
@@ -721,4 +1137,53 @@ $$
 \text{Field Response}
 $$
 
-Together, these components form the current architecture of the Semantic Turing Field.
+The complete architecture can therefore be summarized as:
+
+```
+                    OFFLINE
+                       │
+                       ▼
+                GloVe Embeddings
+                       │
+                       ▼
+                 NLP Processing
+                       │
+              ┌────────┴────────┐
+              ▼                 ▼
+       Similarity Matrix      K-Means
+              │                 │
+              └────────┬────────┘
+                       ▼
+              Precomputed Fields
+                       │
+                       ▼
+              Hugging Face Dataset
+                       │
+                       │
+                    RUNTIME
+                       │
+                       ▼
+              Streamlit Application
+                       │
+                       ▼
+              STF Simulation Engine
+                       │
+              ┌────────┴─────────┐
+              ▼                  ▼
+       Semantic Forces     Sentence Gravity
+              │                  │
+              └────────┬─────────┘
+                       ▼
+                Particle Dynamics
+                       │
+                       ▼
+                  Visualization
+```
+
+This architecture separates expensive semantic preprocessing from runtime
+simulation while preserving the interactive behavior that defines the
+Semantic Turing Field.
+
+The result is a system that can be explored locally as an experimental
+simulation and served through a lightweight web interface using the same
+underlying precomputed semantic fields.
