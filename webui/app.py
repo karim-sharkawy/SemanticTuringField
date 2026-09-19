@@ -15,7 +15,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 os.chdir(ROOT)
 
-from src.app import build_simulation
+from scripts.hf_dataset_registryNEW import (
+    FIELD_SIZES,
+    load_precomputed_field,
+)
 from src.nlp.text_preprocessing import tokenize
 from src.visualization.camera import Camera
 from src.visualization.renderer import Renderer
@@ -23,14 +26,6 @@ from src.visualization.renderer import Renderer
 # ---------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------
-
-FIELD_SIZES = {
-    "500 words": 500,
-    "1,000 words": 1000,
-    "2,500 words": 2500,
-    "5,000 words": 5000,
-    "Full vocabulary": None,
-}
 
 DEFAULT_FIELD = "1,000 words"
 
@@ -43,18 +38,15 @@ GRAVITY_FRAMES = 50
 
 
 @st.cache_resource
-def initialize_simulation(word_limit: int | None):
+def initialize_simulation(field_name: str):
     """
-    Initialize one of the supported STF configurations.
+    Load a precomputed STF configuration from Hugging Face.
 
-    This is temporarily backed by build_simulation().
-    Later, this function will load the corresponding precomputed
-    configuration from Hugging Face instead.
+    Streamlit caches the loaded configuration so the Hugging Face
+    artifacts are not repeatedly downloaded during reruns.
     """
-    if word_limit is None:
-        return build_simulation()
 
-    return build_simulation(word_limit)
+    return load_precomputed_field(field_name)
 
 
 # ---------------------------------------------------------------------
@@ -103,10 +95,8 @@ def initialize_session_state():
 
 def load_field(field_name: str):
     """
-    Load one of the five supported STF configurations.
+    Load one of the five supported STF configurations from Hugging Face.
     """
-
-    word_limit = FIELD_SIZES[field_name]
 
     (
         simulation,
@@ -115,7 +105,7 @@ def load_field(field_name: str):
         vecs,
         clusters,
         labels,
-    ) = initialize_simulation(word_limit)
+    ) = initialize_simulation(field_name)
 
     st.session_state.simulation = simulation
     st.session_state.embeddings = embeddings
