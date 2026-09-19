@@ -154,19 +154,17 @@ class Renderer:
 
             if not np.isfinite(x) or not np.isfinite(y):
                 print(f"Invalid particle {i}: ({x}, {y})")
-
-                print(pos)
-
+                print(f"Raw position: {pos}")
                 raise RuntimeError("Particle position became invalid.")
 
-            # Sentence words are visually emphasized.
+            x = int(round(float(x)))
+            y = int(round(float(y)))
+
             if i in sentence_indices:
                 color = self.sentence_color
                 radius = self.sentence_particle_radius
-
             else:
                 color = cluster_color(clusters[i])
-
                 radius = self.particle_radius
 
             pygame.draw.circle(
