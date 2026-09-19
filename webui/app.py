@@ -215,8 +215,10 @@ def apply_sentence():
         st.warning("Enter a sentence first.")
         return
 
+    # Applying a sentence automatically runs the simulation too
     st.session_state.current_sentence = sentence
     st.session_state.gravity_frames = GRAVITY_FRAMES
+    st.session_state.running = True
 
 
 # ---------------------------------------------------------------------
@@ -248,6 +250,27 @@ def update_simulation():
     else:
         simulation.step()
 
+@st.fragment(run_every=0.1)
+def simulation_view():
+    """
+    Continuously update and render the STF simulation.
+
+    The fragment reruns independently of the rest of the Streamlit app,
+    allowing the field to animate without requiring user interaction.
+    """
+
+    if st.session_state.simulation is None:
+        return
+
+    if st.session_state.running:
+        update_simulation()
+
+    image = render_field()
+
+    st.image(
+        image,
+        use_container_width=True,
+    )
 
 # ---------------------------------------------------------------------
 # Main application
@@ -358,16 +381,7 @@ def main():
     with field_col:
         st.subheader("Semantic Field")
 
-        # Advance simulation before rendering.
-        if st.session_state.running:
-            update_simulation()
-
-        image = render_field()
-
-        st.image(
-            image,
-            use_container_width=True,
-        )
+        simulation_view()
 
     # -----------------------------------------------------------------
     # Information panel
