@@ -375,6 +375,47 @@ The architecture is therefore:
 This separation allows the web application to remain lightweight while
 preserving the dynamic behavior of the simulation.
 
+### Streamlit Rendering and Reloading
+
+The Streamlit application currently uses a periodic `st.fragment` to update the
+simulation while the field is running.
+
+The current rendering flow is:
+
+1. The application loads a precomputed field from Hugging Face.
+2. The field's embeddings, vectors, clusters, labels, and initial simulation
+   state are loaded into Streamlit session state.
+3. When the simulation is running, the simulation fragment periodically:
+   - advances the simulation by one step,
+   - renders the current particle positions using the shared Pygame renderer,
+   - converts the Pygame surface into an image,
+   - displays the image in Streamlit.
+4. Pausing the simulation stops simulation updates while leaving the current
+   field state available.
+5. Applying a sentence enables the temporary gravity-wave disturbance and
+   resumes the simulation.
+
+#### Current Reloading Limitation
+
+Because Streamlit is not a continuously running rendering environment, the
+current web implementation relies on periodic fragment reruns to display
+successive simulation states.
+
+This means the field is repeatedly rendered and sent back through the
+Streamlit application even though most of the application state does not
+change between frames. This can introduce unnecessary computation and
+rendering overhead, particularly as the vocabulary size increases.
+
+The current implementation prioritizes a functional interactive demonstration
+over minimizing web rendering overhead.
+
+A future implementation could separate the continuously updating visualization
+from Streamlit's normal rerun lifecycle, allowing the simulation state to
+update without repeatedly reconstructing and transmitting the entire field
+through Streamlit.
+
+This is tracked in **GitHub Issue #44**.
+
 # 5. NLP Layer
 
 The NLP layer is responsible for converting the original GloVe vocabulary
