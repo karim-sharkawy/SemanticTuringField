@@ -7,7 +7,7 @@ name = "STF"
 version = "0.1.0"
 description = "A dynamic 2D universe where words move, interact, and self-organize to visualize evolving meaning."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12,<3.13"
 license = {text = "MIT"}
 authors = [
   { name = "Karim El-Sharkawy", email = "karimelsharkawy2002@gmail.com" }
