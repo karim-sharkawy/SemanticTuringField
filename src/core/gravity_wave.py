@@ -14,7 +14,6 @@ def gravity_wave(
     strength: float = 0.5,
     threshold: float = 0.3,
 ) -> np.ndarray:
-
     tokens: list[str] = tokenize(sentence)
 
     tokens = stopword_removal(tokens)

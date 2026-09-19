@@ -9,7 +9,6 @@ def compute_forces(
     alpha: float,
     beta: float,
 ) -> np.ndarray:
-
     N = pos.shape[0]
 
     F = np.zeros_like(pos)

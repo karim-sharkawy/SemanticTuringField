@@ -15,7 +15,6 @@ from src.utils.config import (
     DAMPING,
     DT,
     HF_DATASET,
-    NUM_CLUSTERS,
 )
 
 # ---------------------------------------------------------------------
@@ -67,8 +66,7 @@ def download_field_file(
 
     if field_name not in FIELD_SIZES:
         raise ValueError(
-            f"Unknown field '{field_name}'. "
-            f"Available fields: {list(FIELD_SIZES.keys())}"
+            f"Unknown field '{field_name}'. " f"Available fields: {list(FIELD_SIZES.keys())}"
         )
 
     size = FIELD_SIZES[field_name]
@@ -107,8 +105,7 @@ def load_precomputed_field(field_name: str):
 
     if field_name not in FIELD_SIZES:
         raise ValueError(
-            f"Unknown field '{field_name}'. "
-            f"Available fields: {list(FIELD_SIZES.keys())}"
+            f"Unknown field '{field_name}'. " f"Available fields: {list(FIELD_SIZES.keys())}"
         )
 
     print(f"Loading '{field_name}' from Hugging Face...")
@@ -236,10 +233,7 @@ def load_precomputed_field(field_name: str):
 
     simulation.step_count = 0
 
-    print(
-        f"Loaded {len(words):,} words "
-        f"from Hugging Face."
-    )
+    print(f"Loaded {len(words):,} words " f"from Hugging Face.")
 
     return (
         simulation,
@@ -269,9 +263,7 @@ def create_dataset_repository():
         exist_ok=True,
     )
 
-    print(
-        f"Hugging Face dataset ready: {HF_DATASET}"
-    )
+    print(f"Hugging Face dataset ready: {HF_DATASET}")
 
 
 def upload_file(
@@ -285,9 +277,7 @@ def upload_file(
     file_path = Path(file_path)
 
     if not file_path.exists():
-        raise FileNotFoundError(
-            f"File does not exist: {file_path}"
-        )
+        raise FileNotFoundError(f"File does not exist: {file_path}")
 
     api = get_hf_api()
 
@@ -298,9 +288,7 @@ def upload_file(
         repo_type="dataset",
     )
 
-    print(
-        f"Uploaded {file_path} → {path_in_repo}"
-    )
+    print(f"Uploaded {file_path} → {path_in_repo}")
 
 
 def upload_precomputed_fields():
@@ -310,55 +298,32 @@ def upload_precomputed_fields():
 
     project_root = Path(__file__).resolve().parents[2]
 
-    precomputed_dir = (
-        project_root
-        / "data"
-        / "precomputed"
-    )
+    precomputed_dir = project_root / "data" / "precomputed"
 
     create_dataset_repository()
 
     for field_name, size in FIELD_SIZES.items():
+        directory_name = "full" if size is None else str(size)
 
-        directory_name = (
-            "full"
-            if size is None
-            else str(size)
-        )
-
-        field_dir = (
-            precomputed_dir
-            / directory_name
-        )
+        field_dir = precomputed_dir / directory_name
 
         if not field_dir.exists():
-            raise FileNotFoundError(
-                f"Precomputed field not found: {field_dir}"
-            )
+            raise FileNotFoundError(f"Precomputed field not found: {field_dir}")
 
-        print(
-            f"\nUploading field: {field_name}"
-        )
+        print(f"\nUploading field: {field_name}")
 
         for file_path in field_dir.iterdir():
-
             if not file_path.is_file():
                 continue
 
-            repo_path = (
-                f"fields/"
-                f"{directory_name}/"
-                f"{file_path.name}"
-            )
+            repo_path = f"fields/" f"{directory_name}/" f"{file_path.name}"
 
             upload_file(
                 file_path,
                 repo_path,
             )
 
-    print(
-        "\nAll precomputed STF fields uploaded."
-    )
+    print("\nAll precomputed STF fields uploaded.")
 
 
 # ---------------------------------------------------------------------

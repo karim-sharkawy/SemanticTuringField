@@ -24,7 +24,6 @@ class Camera:
         width: int = 1200,
         height: int = 800,
     ) -> None:
-
         # Window dimensions
         self.width: int = width
         self.height: int = height
@@ -69,7 +68,6 @@ class Camera:
 
     ### Event handling
     def handle_event(self, event: Any) -> None:
-
         # Begin drag
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             self.dragging = True

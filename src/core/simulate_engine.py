@@ -20,7 +20,6 @@ class STFSimulation:
         dt=0.05,
         damping=0.99,
     ):
-
         self.S = similarity_matrix
 
         self.alpha = alpha

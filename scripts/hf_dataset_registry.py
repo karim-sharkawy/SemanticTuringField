@@ -14,10 +14,10 @@ DATA_DIR = Path("data")
 
 FIELD_SIZES = {
     "500 words": 500,
-    #"1,000 words": 1000,
-    #"2,500 words": 2500,
-    #"5,000 words": 5000,
-    #"Full vocabulary": None,
+    # "1,000 words": 1000,
+    # "2,500 words": 2500,
+    # "5,000 words": 5000,
+    # "Full vocabulary": None,
 }
 
 
@@ -91,7 +91,7 @@ def upload_raw_glove_files() -> None:
 def main() -> None:
     create_dataset_repository()
 
-    #upload_raw_glove_files()
+    # upload_raw_glove_files()
 
     print("All raw GloVe files uploaded.")
 

@@ -24,7 +24,6 @@ from src.utils.save_state import load_state, save_state
 
 class InputHandler:
     def __init__(self, camera: Any) -> None:
-
         self.camera: Any = camera
 
         # Simulation state

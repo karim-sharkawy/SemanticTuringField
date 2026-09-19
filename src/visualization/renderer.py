@@ -28,7 +28,6 @@ class Renderer:
         width: int = 1200,
         height: int = 800,
     ) -> None:
-
         pygame.init()
 
         self.width: int = width
@@ -148,7 +147,6 @@ class Renderer:
         clusters: np.ndarray,
         sentence_indices: set[int],
     ) -> None:
-
         for i, pos in enumerate(positions):
             x, y = camera.world_to_screen(pos)
 
@@ -181,7 +179,6 @@ class Renderer:
         positions: np.ndarray,
         words: list[str],
     ) -> None:
-
         mouse: tuple[int, int] = pygame.mouse.get_pos()
 
         hovered: int | None = None
@@ -219,7 +216,6 @@ class Renderer:
         simulation: Any,
         paused: bool,
     ) -> None:
-
         status = "Paused" if paused else "Running"
 
         ui: list[str] = [
@@ -268,7 +264,6 @@ class Renderer:
         self,
         input_handler: Any,
     ) -> None:
-
         y = self.height - 45
 
         pygame.draw.rect(

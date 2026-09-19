@@ -250,6 +250,7 @@ def update_simulation():
     else:
         simulation.step()
 
+
 @st.fragment(run_every=0.1)
 def simulation_view():
     """
@@ -272,13 +273,13 @@ def simulation_view():
         use_container_width=True,
     )
 
+
 # ---------------------------------------------------------------------
 # Main application
 # ---------------------------------------------------------------------
 
 
 def main():
-
     st.set_page_config(
         page_title="Semantic Turing Field",
         page_icon="✦",
