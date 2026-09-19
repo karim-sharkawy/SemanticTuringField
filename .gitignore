@@ -6,6 +6,7 @@
 # Data
 *.zip
 *.txt
+data/precomputed
 
 # Python
 __pycache__/
