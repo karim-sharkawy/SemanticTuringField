@@ -73,10 +73,10 @@ def upload_raw_glove_files() -> None:
     # okay to keep hardcoded for now, but will change later
     files = {
         "glove.2024.wikigiga.50d_500.txt": "raw/glove.2024.wikigiga.50d_500.txt",
-        #"glove.2024.wikigiga.50d_1000.txt": "raw/glove.2024.wikigiga.50d_1000.txt",
-        #"glove.2024.wikigiga.50d_2500.txt": "raw/glove.2024.wikigiga.50d_2500.txt",
-        #"glove.2024.wikigiga.50d_5000.txt": "raw/glove.2024.wikigiga.50d_5000.txt",
-        #"glove.2024.wikigiga.50d_full.txt": "raw/glove.2024.wikigiga.50d_full.txt",
+        "glove.2024.wikigiga.50d_1000.txt": "raw/glove.2024.wikigiga.50d_1000.txt",
+        "glove.2024.wikigiga.50d_2500.txt": "raw/glove.2024.wikigiga.50d_2500.txt",
+        "glove.2024.wikigiga.50d_5000.txt": "raw/glove.2024.wikigiga.50d_5000.txt",
+        "glove.2024.wikigiga.50d_full.txt": "raw/glove.2024.wikigiga.50d_full.txt",
     }
 
     for filename, repo_path in files.items():
@@ -91,7 +91,7 @@ def upload_raw_glove_files() -> None:
 def main() -> None:
     create_dataset_repository()
 
-    upload_raw_glove_files()
+    #upload_raw_glove_files()
 
     print("All raw GloVe files uploaded.")
 

@@ -87,10 +87,10 @@ def extract_all_sizes():
 
     sizes = {
         "glove.2024.wikigiga.50d_500": 500,
-        #"glove.2024.wikigiga.50d_1000": 1000,
-        #"glove.2024.wikigiga.50d_2500": 2500,
-        #"glove.2024.wikigiga.50d_5000": 5000,
-        #"glove.2024.wikigiga.50d_full": None,
+        "glove.2024.wikigiga.50d_1000": 1000,
+        "glove.2024.wikigiga.50d_2500": 2500,
+        "glove.2024.wikigiga.50d_5000": 5000,
+        "glove.2024.wikigiga.50d_full": None,
     }
 
     for name, size in sizes.items():
