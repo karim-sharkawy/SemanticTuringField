@@ -42,10 +42,10 @@ from src.utils.config import (
 
 FIELD_SIZES: dict[str, int | None] = {
     "500": 500,
-    # "1000": 1000,
-    # "2500": 2500,
-    # "5000": 5000,
-    # "full": None,
+    "1000": 1000,
+    "2500": 2500,
+    "5000": 5000,
+    "full": None,
 }
 
 OUTPUT_DIR = Path("data/precomputed")

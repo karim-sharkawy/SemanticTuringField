@@ -91,7 +91,7 @@ def upload_raw_glove_files() -> None:
 def main() -> None:
     create_dataset_repository()
 
-    # upload_raw_glove_files()
+    upload_raw_glove_files()
 
     print("All raw GloVe files uploaded.")
 
